@@ -1,6 +1,6 @@
 const getState = ({ getStore, getActions, setStore }) => {
     const apiBaseURL = "https://playground.4geeks.com/contact";
-    const agendaEndpoint = `${apiBaseURL}/agendas/AgendaMarcosSevilla`;
+    const agendaEndpoint = `${apiBaseURL}/agendas/MarcosSevilla`;
     const contactsEndpoint = `${agendaEndpoint}/contacts`;
 
     // Generar URL de imagen aleatoria
