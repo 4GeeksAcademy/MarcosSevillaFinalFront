@@ -4,8 +4,8 @@ const getState = ({ getStore, getActions, setStore }) => {
     const agendaEndpoint = `${apiBaseURL}/agendas/AgendaMarcosSevilla`;
     const contactsEndpoint = `${agendaEndpoint}/contacts`;
 
-    // Generar URL de imagen aleatoria
     const generateRandomImage = () => {
+        // Generar URL de imagen aleatoria
         const gender = Math.random() > 0.5 ? "men" : "women"; // Alterna entre hombres y mujeres
         const id = Math.floor(Math.random() * 99); // Genera un número aleatorio entre 0 y 99
         return `https://randomuser.me/api/portraits/${gender}/${id}.jpg`;
@@ -110,8 +110,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error("Error fetching characters:", error);
                 }
             },
-            // Fetch Planets
             fetchPlanets: async () => {
+                // Fetch Planets
                 try {
                     const response = await fetch(`${swapiBaseURL}planets/`);
                     const data = await response.json();
@@ -120,8 +120,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error("Error fetching planets:", error);
                 }
             },
-            // Fetch Starships
             fetchStarships: async () => {
+                // Fetch Starships
                 try {
                     const response = await fetch(`${swapiBaseURL}starships/`);
                     const data = await response.json();
@@ -130,8 +130,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error("Error fetching starships:", error);
                 }
             },
-            // Add to Favorites
             addToFavorites: (item) => {
+                // Add to Favorites
                 const store = getStore();
                 const favorites = store.favorites; // Obtener la lista actual de favoritos
                 // Verificar si el elemento ya está en favoritos
@@ -142,8 +142,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                     });
                 }
             },
-            // Remove from Favorites
             removeFromFavorites: (name) => {
+                // Remove from Favorites
                 const store = getStore();
                 const updatedFavorites = store.favorites.filter((fav) => fav.name !== name);
                 setStore({
