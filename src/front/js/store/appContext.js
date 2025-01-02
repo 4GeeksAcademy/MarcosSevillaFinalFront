@@ -23,12 +23,8 @@ const injectContext = (PassedComponent) => {
 
         // Llama a `fetchContacts` al montar el componente
         useEffect(() => {
-            if (state.actions && typeof state.actions.fetchContacts === "function") {
                 state.actions.fetchContacts();
-            } else {
-                console.error("fetchContacts is not defined or not a function in actions");
-            }
-        }, [state.actions]);
+        }, []);
 
         return (
             <Context.Provider value={state}>

@@ -5,14 +5,6 @@ import { ContactCard } from "../component/ContactCard.jsx";
 export const ContactList = () => {
     const { store, actions } = useContext(Context);
 
-    useEffect(() => {
-        if (actions && typeof actions.fetchContacts === "function") {
-            actions.fetchContacts();
-        } else {
-            console.error("fetchContacts is not defined or not a function in actions.");
-        }
-    }, [actions]);
-
     return (
         <div className="container mt-3">
             <h1 className="text-primary">Contact List</h1>
