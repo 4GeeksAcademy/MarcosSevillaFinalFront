@@ -3,158 +3,159 @@ const getState = ({ getStore, getActions, setStore }) => {
     const apiBaseURL = "https://playground.4geeks.com/contact";
     const agendaEndpoint = `${apiBaseURL}/agendas/AgendaMarcosSevilla`;
     const contactsEndpoint = `${agendaEndpoint}/contacts`;
-
-    const generateRandomImage = () => {
-        // Generar URL de imagen aleatoria
-        const gender = Math.random() > 0.5 ? "men" : "women"; // Alterna entre hombres y mujeres
-        const id = Math.floor(Math.random() * 99); // Genera un número aleatorio entre 0 y 99
-        return `https://randomuser.me/api/portraits/${gender}/${id}.jpg`;
-    };
+    const charactersEndpoint = `${swapiBaseURL}people`; // Endpoint para personajes
 
     return {
         store: {
             contacts: [],
-            favorites: [], // Lista de favoritos
+            favorites: [],
             characters: [],
             planets: [],
             starships: [],
+            totalCharacters: 0,
+            totalPages: 0,
+            currentPage: 1,
+            nextPage: null,
+            previousPage: null,
         },
-        actions: { 
-            deleteContact: async (id) => {
-                // Eliminar un contacto (DELETE)
-                try {
-                    const response = await fetch(`${contactsEndpoint}/${id}`, {
-                        method: "DELETE",
-                        headers: { Accept: "application/json" },
-                    });
-                    if (!response.ok) throw new Error(`Error deleting contact: ${response.statusText}`);
-
-                    console.log(`Contact with ID ${id} deleted successfully`);
-
-                    // Actualiza la lista de contactos después de eliminar
-                    await getActions().fetchContacts();
-                    return true; // Indica que la eliminación fue exitosa
-                } catch (error) {
-                    console.error("Error deleting contact:", error);
-                    return false; // Indica que hubo un error
-                }
-            },
+        actions: {
+            // Obtener contactos
             fetchContacts: async () => {
-                // Obtener la lista de contactos (GET)
                 try {
-                    const response = await fetch(agendaEndpoint, {
-                        method: "GET",
-                        headers: { Accept: "application/json" },
-                    });
+                    const response = await fetch(contactsEndpoint);
                     if (!response.ok) throw new Error(`Error fetching contacts: ${response.statusText}`);
                     const data = await response.json();
 
-                    // Agregar imágenes aleatorias a cada contacto
-                    const contactsWithImages = data.contacts.map((contact) => ({
-                        ...contact,
-                        image: generateRandomImage(), // Asignar imagen aleatoria
-                    }));
-                    setStore({ contacts: contactsWithImages });
+                    setStore({
+                        contacts: data.contacts.map(contact => ({
+                            ...contact,
+                            image: `https://randomuser.me/api/portraits/men/${Math.floor(Math.random() * 99)}.jpg`,
+                        })),
+                    });
                 } catch (error) {
                     console.error("Error fetching contacts:", error);
                 }
             },
+
+            // Crear contacto
             createContact: async (contact) => {
-                // Crear un nuevo contacto (POST)
                 try {
                     const response = await fetch(contactsEndpoint, {
                         method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            ...contact,
-                            agenda_slug: "AgendaMarcosSevilla",
-                        }),
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ ...contact, agenda_slug: "AgendaMarcosSevilla" }),
                     });
                     if (!response.ok) throw new Error(`Error creating contact: ${response.statusText}`);
-                    console.log("Contact created successfully");
                     await getActions().fetchContacts();
-                    return true;
                 } catch (error) {
                     console.error("Error creating contact:", error);
-                    return false;
                 }
             },
+
+            // Actualizar contacto
             updateContact: async (id, updatedData) => {
-                // Actualizar un contacto existente (PUT)
                 try {
                     const response = await fetch(`${contactsEndpoint}/${id}`, {
                         method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
+                        headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(updatedData),
                     });
                     if (!response.ok) throw new Error(`Error updating contact: ${response.statusText}`);
-                    console.log("Contact updated successfully");
                     await getActions().fetchContacts();
-                    return true;
                 } catch (error) {
                     console.error("Error updating contact:", error);
-                    return false;
                 }
             },
-            fetchCharacters: async () => {
-                // Fetch Characters
+
+            // Eliminar contacto
+            deleteContact: async (id) => {
                 try {
-                    const response = await fetch(`${swapiBaseURL}people/`);
+                    const response = await fetch(`${contactsEndpoint}/${id}`, { method: "DELETE" });
+                    if (!response.ok) throw new Error(`Error deleting contact: ${response.statusText}`);
+                    await getActions().fetchContacts();
+                } catch (error) {
+                    console.error("Error deleting contact:", error);
+                }
+            },
+
+            // Obtener personajes con paginación
+            fetchCharacters: async (page = 1, limit = 10) => {
+                try {
+                    const response = await fetch(`${charactersEndpoint}?page=${page}&limit=${limit}`);
+                    if (!response.ok) throw new Error(`Error fetching characters: ${response.statusText}`);
                     const data = await response.json();
-                    setStore({ characters: data.results });
+
+                    setStore({
+                        characters: data.results.map(character => ({
+                            ...character,
+                            image: `https://starwars-visualguide.com/assets/img/characters/${character.uid}.jpg`,
+                        })),
+                        totalCharacters: data.total_records,
+                        totalPages: data.total_pages,
+                        currentPage: page,
+                        nextPage: data.next,
+                        previousPage: data.previous,
+                    });
                 } catch (error) {
                     console.error("Error fetching characters:", error);
                 }
             },
+
+            // Obtener detalles de un personaje
+            fetchCharacterDetails: async (uid) => {
+                try {
+                    const response = await fetch(`${charactersEndpoint}/${uid}`);
+                    if (!response.ok) throw new Error(`Error fetching character details: ${response.statusText}`);
+                    const data = await response.json();
+                    setStore({ selectedCharacter: data.result.properties });
+                } catch (error) {
+                    console.error("Error fetching character details:", error);
+                }
+            },
+
+            // Obtener planetas
             fetchPlanets: async () => {
-                // Fetch Planets
                 try {
                     const response = await fetch(`${swapiBaseURL}planets/`);
+                    if (!response.ok) throw new Error(`Error fetching planets: ${response.statusText}`);
                     const data = await response.json();
                     setStore({ planets: data.results });
                 } catch (error) {
                     console.error("Error fetching planets:", error);
                 }
             },
+
+            // Obtener naves espaciales
             fetchStarships: async () => {
-                // Fetch Starships
                 try {
                     const response = await fetch(`${swapiBaseURL}starships/`);
+                    if (!response.ok) throw new Error(`Error fetching starships: ${response.statusText}`);
                     const data = await response.json();
                     setStore({ starships: data.results });
                 } catch (error) {
                     console.error("Error fetching starships:", error);
                 }
             },
+
+            // Añadir a favoritos
             addToFavorites: (item) => {
-                // Add to Favorites
                 const store = getStore();
-                const favorites = store.favorites; // Obtener la lista actual de favoritos
-                // Verificar si el elemento ya está en favoritos
-                const isFavorite = favorites.some((fav) => fav.name === item.name);
-                if (!isFavorite) {
-                    setStore({
-                        favorites: [...favorites, item], // Añadir el nuevo favorito sin sobrescribir
-                    });
+                if (!store.favorites.some(fav => fav.name === item.name)) {
+                    setStore({ favorites: [...store.favorites, item] });
                 }
             },
+
+            // Eliminar de favoritos
             removeFromFavorites: (name) => {
-                // Remove from Favorites
                 const store = getStore();
-                const updatedFavorites = store.favorites.filter((fav) => fav.name !== name);
-                setStore({
-                    favorites: updatedFavorites, // Actualizar favoritos eliminando el seleccionado
-                });
+                setStore({ favorites: store.favorites.filter(fav => fav.name !== name) });
             },
         },
     };
 };
 
 export default getState;
+
 
 
 
