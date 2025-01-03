@@ -7,7 +7,7 @@ export const CharacterList = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        actions.fetchCharacters();
+        actions.fetchCharacters(); // Obtener todos los personajes
     }, []);
 
     const isFavorite = (name) => {
@@ -21,30 +21,24 @@ export const CharacterList = () => {
                 {store.characters.map((character, index) => (
                     <div key={index} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
                         <div className="card bg-dark text-light h-100">
-                            {/* Imagen */}
                             <img
                                 src={
                                     character.image ||
-                                    "https://via.placeholder.com/300x400?text=Character+Image"
+                                    "https://via.placeholder.com/300x200?text=Character+Image"
                                 }
                                 className="card-img-top"
                                 alt={character.name}
                                 style={{ height: "300px", objectFit: "cover" }}
                             />
-                            {/* Contenido */}
                             <div className="card-body d-flex flex-column">
-                                {/* Nombre del personaje */}
                                 <h5 className="card-title mb-3">{character.name}</h5>
-                                {/* Botones */}
                                 <div className="d-flex justify-content-between align-items-center mt-auto">
-                                    {/* Botón Details */}
                                     <button
                                         className="btn btn-secondary rounded"
-                                        onClick={() => navigate(`/characters/${index}`)}
+                                        onClick={() => navigate(`/characters/${character.uid}`)}
                                     >
                                         Details
                                     </button>
-                                    {/* Ícono de corazón */}
                                     <button
                                         className="btn btn-outline-warning"
                                         onClick={() =>
@@ -69,6 +63,8 @@ export const CharacterList = () => {
         </div>
     );
 };
+
+
 
 
 

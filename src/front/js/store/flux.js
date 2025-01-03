@@ -4,19 +4,15 @@ const getState = ({ getStore, getActions, setStore }) => {
     const agendaEndpoint = `${apiBaseURL}/agendas/AgendaMarcosSevilla`;
     const contactsEndpoint = `${agendaEndpoint}/contacts`;
     const charactersEndpoint = `${swapiBaseURL}people`; // Endpoint para personajes
+    const planetsEndpoint = `${swapiBaseURL}planets`; // Endpoint para planetas
 
     return {
         store: {
             contacts: [],
             favorites: [],
             characters: [],
+            selectedCharacter: null, // Detalles del personaje seleccionado
             planets: [],
-            starships: [],
-            totalCharacters: 0,
-            totalPages: 0,
-            currentPage: 1,
-            nextPage: null,
-            previousPage: null,
         },
         actions: {
             // Obtener contactos
@@ -78,10 +74,10 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 
-            // Obtener personajes con paginación
-            fetchCharacters: async (page = 1, limit = 10) => {
+            // Obtener todos los personajes
+            fetchCharacters: async () => {
                 try {
-                    const response = await fetch(`${charactersEndpoint}?page=${page}&limit=${limit}`);
+                    const response = await fetch(charactersEndpoint);
                     if (!response.ok) throw new Error(`Error fetching characters: ${response.statusText}`);
                     const data = await response.json();
 
@@ -90,11 +86,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                             ...character,
                             image: `https://starwars-visualguide.com/assets/img/characters/${character.uid}.jpg`,
                         })),
-                        totalCharacters: data.total_records,
-                        totalPages: data.total_pages,
-                        currentPage: page,
-                        nextPage: data.next,
-                        previousPage: data.previous,
                     });
                 } catch (error) {
                     console.error("Error fetching characters:", error);
@@ -107,33 +98,28 @@ const getState = ({ getStore, getActions, setStore }) => {
                     const response = await fetch(`${charactersEndpoint}/${uid}`);
                     if (!response.ok) throw new Error(`Error fetching character details: ${response.statusText}`);
                     const data = await response.json();
-                    setStore({ selectedCharacter: data.result.properties });
+
+                    setStore({ selectedCharacter: data.result.properties }); // Guardamos los detalles del personaje
                 } catch (error) {
                     console.error("Error fetching character details:", error);
                 }
             },
 
-            // Obtener planetas
+            // Obtener todos los planetas
             fetchPlanets: async () => {
                 try {
-                    const response = await fetch(`${swapiBaseURL}planets/`);
+                    const response = await fetch(planetsEndpoint);
                     if (!response.ok) throw new Error(`Error fetching planets: ${response.statusText}`);
                     const data = await response.json();
-                    setStore({ planets: data.results });
+
+                    setStore({
+                        planets: data.results.map(planet => ({
+                            ...planet,
+                            image: `https://starwars-visualguide.com/assets/img/planets/${planet.uid}.jpg`,
+                        })),
+                    });
                 } catch (error) {
                     console.error("Error fetching planets:", error);
-                }
-            },
-
-            // Obtener naves espaciales
-            fetchStarships: async () => {
-                try {
-                    const response = await fetch(`${swapiBaseURL}starships/`);
-                    if (!response.ok) throw new Error(`Error fetching starships: ${response.statusText}`);
-                    const data = await response.json();
-                    setStore({ starships: data.results });
-                } catch (error) {
-                    console.error("Error fetching starships:", error);
                 }
             },
 
@@ -155,6 +141,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 };
 
 export default getState;
+
+
 
 
 
