@@ -1,14 +1,15 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 
 export const CharacterList = () => {
     const { store, actions } = useContext(Context);
     const navigate = useNavigate();
+    const [page, setPage] = useState(1); // Estado para manejar la página actual
 
     useEffect(() => {
-        actions.fetchCharacters(); // Obtener todos los personajes
-    }, []);
+        actions.fetchCharacters(page); // Llama al fetchCharacters con la página actual
+    }, [page]);
 
     const isFavorite = (name) => {
         return store.favorites.some((fav) => fav.name === name);
@@ -60,9 +61,27 @@ export const CharacterList = () => {
                     </div>
                 ))}
             </div>
+
+            {/* Paginación */}
+            <div className="d-flex justify-content-between mt-4">
+                <button
+                    className="btn btn-warning"
+                    disabled={page === 1} // Desactiva si estamos en la primera página
+                    onClick={() => setPage(page - 1)}
+                >
+                    Previous
+                </button>
+                <button
+                    className="btn btn-warning"
+                    onClick={() => setPage(page + 1)}
+                >
+                    Next
+                </button>
+            </div>
         </div>
     );
 };
+
 
 
 

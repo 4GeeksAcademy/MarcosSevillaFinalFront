@@ -19,7 +19,7 @@ export const Navbar = () => {
                     }}
                 >
                     <img
-                        src="https://starwars-visualguide.com/assets/img/logo.png"
+                        src="https://starwars.chocobar.net/star-wars-logo.png"
                         alt="Star Wars"
                         style={{
                             height: "60px",

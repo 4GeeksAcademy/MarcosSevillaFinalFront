@@ -75,17 +75,20 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
 
             // Obtener todos los personajes
-            fetchCharacters: async () => {
+            fetchCharacters: async (page = 1) => {
+                const charactersEndpoint = `${swapiBaseURL}people?page=${page}&limit=10`; // Ajusta para paginación
                 try {
                     const response = await fetch(charactersEndpoint);
                     if (!response.ok) throw new Error(`Error fetching characters: ${response.statusText}`);
                     const data = await response.json();
-
+            
+                    const charactersWithImages = data.results.map(character => ({
+                        ...character,
+                        image: `https://starwars-visualguide.com/assets/img/characters/${character.uid}.jpg`,
+                    }));
+            
                     setStore({
-                        characters: data.results.map(character => ({
-                            ...character,
-                            image: `https://starwars-visualguide.com/assets/img/characters/${character.uid}.jpg`,
-                        })),
+                        characters: charactersWithImages, // Actualiza los personajes
                     });
                 } catch (error) {
                     console.error("Error fetching characters:", error);
