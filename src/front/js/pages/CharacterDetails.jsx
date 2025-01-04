@@ -94,7 +94,6 @@ export const CharacterDetails = () => {
                 )}
             </div>
             <footer className="bg-dark text-center text-light py-3 mt-auto">
-                <p className="mb-0">Star Wars API - Powered by SWAPI</p>
             </footer>
         </div>
     );
