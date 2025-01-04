@@ -3,16 +3,17 @@ const getState = ({ getStore, getActions, setStore }) => {
     const apiBaseURL = "https://playground.4geeks.com/contact";
     const agendaEndpoint = `${apiBaseURL}/agendas/AgendaMarcosSevilla`;
     const contactsEndpoint = `${agendaEndpoint}/contacts`;
-    const charactersEndpoint = `${swapiBaseURL}people`; // Endpoint para personajes
-    const planetsEndpoint = `${swapiBaseURL}planets`; // Endpoint para planetas
+    const charactersEndpoint = `${swapiBaseURL}people`;
+    const planetsEndpoint = `${swapiBaseURL}planets`;
 
     return {
         store: {
             contacts: [],
-            favorites: [],
-            characters: [],
+            favorites: [], // Lista de favoritos
+            characters: [], // Lista de personajes
             selectedCharacter: null, // Detalles del personaje seleccionado
-            planets: [],
+            planets: [], // Lista de planetas
+            selectedPlanet: null, // Detalles del planeta seleccionado
         },
         actions: {
             // Obtener contactos
@@ -23,7 +24,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                     const data = await response.json();
 
                     setStore({
-                        contacts: data.contacts.map(contact => ({
+                        contacts: data.contacts.map((contact) => ({
                             ...contact,
                             image: `https://randomuser.me/api/portraits/men/${Math.floor(Math.random() * 99)}.jpg`,
                         })),
@@ -75,14 +76,15 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
 
             // Obtener todos los personajes
-            fetchCharacters: async () => {
+            fetchCharacters: async (page = 1) => {
+                const endpoint = `${charactersEndpoint}?page=${page}&limit=10`; // Paginación
                 try {
-                    const response = await fetch(charactersEndpoint);
+                    const response = await fetch(endpoint);
                     if (!response.ok) throw new Error(`Error fetching characters: ${response.statusText}`);
                     const data = await response.json();
 
                     setStore({
-                        characters: data.results.map(character => ({
+                        characters: data.results.map((character) => ({
                             ...character,
                             image: `https://starwars-visualguide.com/assets/img/characters/${character.uid}.jpg`,
                         })),
@@ -99,21 +101,22 @@ const getState = ({ getStore, getActions, setStore }) => {
                     if (!response.ok) throw new Error(`Error fetching character details: ${response.statusText}`);
                     const data = await response.json();
 
-                    setStore({ selectedCharacter: data.result.properties }); // Guardamos los detalles del personaje
+                    setStore({ selectedCharacter: data.result.properties }); // Guardar detalles del personaje
                 } catch (error) {
                     console.error("Error fetching character details:", error);
                 }
             },
 
             // Obtener todos los planetas
-            fetchPlanets: async () => {
+            fetchPlanets: async (page = 1) => {
+                const endpoint = `${planetsEndpoint}?page=${page}&limit=10`; // Paginación
                 try {
-                    const response = await fetch(planetsEndpoint);
+                    const response = await fetch(endpoint);
                     if (!response.ok) throw new Error(`Error fetching planets: ${response.statusText}`);
                     const data = await response.json();
 
                     setStore({
-                        planets: data.results.map(planet => ({
+                        planets: data.results.map((planet) => ({
                             ...planet,
                             image: `https://starwars-visualguide.com/assets/img/planets/${planet.uid}.jpg`,
                         })),
@@ -123,24 +126,50 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 
-            // Añadir a favoritos
-            addToFavorites: (item) => {
-                const store = getStore();
-                if (!store.favorites.some(fav => fav.name === item.name)) {
-                    setStore({ favorites: [...store.favorites, item] });
+            // Obtener detalles de un planeta
+            fetchPlanetDetails: async (uid) => {
+                try {
+                    const response = await fetch(`${planetsEndpoint}/${uid}`);
+                    if (!response.ok) throw new Error(`Error fetching planet details: ${response.statusText}`);
+                    const data = await response.json();
+
+                    setStore({ selectedPlanet: data.result.properties }); // Guardar detalles del planeta
+                } catch (error) {
+                    console.error("Error fetching planet details:", error);
                 }
             },
 
-            // Eliminar de favoritos
+            // Añadir a favoritos
+            addToFavorites: (item) => {
+                const store = getStore();
+
+                // Verificar si el elemento ya está en favoritos
+                const isFavorite = store.favorites.some((fav) => fav.name === item.name);
+
+                if (!isFavorite) {
+                    setStore({
+                        favorites: [...store.favorites, item], // Agrega el nuevo favorito al array existente
+                    });
+                }
+            },
+
             removeFromFavorites: (name) => {
                 const store = getStore();
-                setStore({ favorites: store.favorites.filter(fav => fav.name !== name) });
+
+                // Filtrar favoritos para eliminar el seleccionado
+                const updatedFavorites = store.favorites.filter((fav) => fav.name !== name);
+
+                setStore({
+                    favorites: updatedFavorites, // Actualiza el array de favoritos eliminando el seleccionado
+                });
             },
         },
     };
 };
 
 export default getState;
+
+
 
 
 

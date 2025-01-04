@@ -7,7 +7,8 @@ import { ContactList } from "./pages/ContactList.jsx";
 import { CharacterList } from "./pages/CharacterList.jsx";
 import { PlanetList } from "./pages/PlanetList.jsx";
 import { StarshipList } from "./pages/StarshipList.jsx";
-import { CharacterDetails } from "./pages/CharacterDetails.jsx"; // Importa el componente de detalles de personaje
+import { CharacterDetails } from "./pages/CharacterDetails.jsx";
+import { PlanetDetails } from "./pages/PlanetDetails.jsx";
 
 const Layout = () => {
     return (
@@ -20,6 +21,7 @@ const Layout = () => {
                     <Route path="/characters" element={<CharacterList />} />
                     <Route path="/characters/:uid" element={<CharacterDetails />} />
                     <Route path="/planets" element={<PlanetList />} />
+                    <Route path="/planets/:uid" element={<PlanetDetails />} />
                     <Route path="/starships" element={<StarshipList />} />
                 </Routes>
                 <Footer />
@@ -29,6 +31,7 @@ const Layout = () => {
 };
 
 export default Layout;
+
 
 
 

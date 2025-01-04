@@ -19,7 +19,7 @@ export const Navbar = () => {
                     }}
                 >
                     <img
-                        src="https://starwars-visualguide.com/assets/img/logo.png"
+                        src="https://starwars.chocobar.net/star-wars-logo.png"
                         alt="Star Wars"
                         style={{
                             height: "60px",
@@ -27,7 +27,6 @@ export const Navbar = () => {
                         }}
                     />
                 </Link>
-                {/* Menús */}
                 <div className="d-flex align-items-center" style={{ gap: "15px" }}>
                     <Link to="/characters" className="nav-link text-light" style={{ fontSize: "0.9rem" }}>
                         Characters
@@ -50,15 +49,13 @@ export const Navbar = () => {
                             aria-expanded="false"
                             style={{
                                 fontSize: "0.9rem",
-                                backgroundColor: "#6c757d", // Fondo gris para el botón
+                                backgroundColor: "#6c757d",
                                 color: "white",
                                 border: "none",
-                                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)", // Pequeña sombra
                             }}
                         >
                             Favorites
                         </button>
-                        {/* Círculo amarillo con número de favoritos */}
                         <span
                             className="position-absolute"
                             style={{
@@ -74,12 +71,10 @@ export const Navbar = () => {
                                 display: "flex",
                                 justifyContent: "center",
                                 alignItems: "center",
-                                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)", // Sombra
                             }}
                         >
                             {store.favorites.length}
                         </span>
-                        {/* Desplegable con los favoritos */}
                         <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownFavorites">
                             {store.favorites.length > 0 ? (
                                 store.favorites.map((fav, index) => (
@@ -90,10 +85,9 @@ export const Navbar = () => {
                                         <span>{fav.name}</span>
                                         <button
                                             className="btn btn-sm btn-danger"
-                                            title="Remove Favorite"
                                             onClick={() => actions.removeFromFavorites(fav.name)}
                                         >
-                                            <i className="fas fa-trash-alt"></i> {/* Ícono de papelera */}
+                                            <i className="fas fa-trash-alt"></i>
                                         </button>
                                     </li>
                                 ))
@@ -107,6 +101,10 @@ export const Navbar = () => {
         </nav>
     );
 };
+
+
+
+
 
 
 

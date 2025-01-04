@@ -1,15 +1,17 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 
 export const CharacterList = () => {
     const { store, actions } = useContext(Context);
     const navigate = useNavigate();
+    const [page, setPage] = useState(1); // Manejo de paginación
 
     useEffect(() => {
-        actions.fetchCharacters(); // Obtener todos los personajes
-    }, []);
+        actions.fetchCharacters(page);
+    }, [page]);
 
+    // Verificar si un personaje está en favoritos
     const isFavorite = (name) => {
         return store.favorites.some((fav) => fav.name === name);
     };
@@ -22,10 +24,7 @@ export const CharacterList = () => {
                     <div key={index} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
                         <div className="card bg-dark text-light h-100">
                             <img
-                                src={
-                                    character.image ||
-                                    "https://via.placeholder.com/300x200?text=Character+Image"
-                                }
+                                src={character.image || "https://via.placeholder.com/300x200?text=Character+Image"}
                                 className="card-img-top"
                                 alt={character.name}
                                 style={{ height: "300px", objectFit: "cover" }}
@@ -40,7 +39,11 @@ export const CharacterList = () => {
                                         Details
                                     </button>
                                     <button
-                                        className="btn btn-outline-warning"
+                                        className={`btn ${
+                                            isFavorite(character.name)
+                                                ? "btn-warning"
+                                                : "btn-outline-warning"
+                                        }`}
                                         onClick={() =>
                                             isFavorite(character.name)
                                                 ? actions.removeFromFavorites(character.name)
@@ -49,7 +52,7 @@ export const CharacterList = () => {
                                     >
                                         <i
                                             className={`fas fa-heart ${
-                                                isFavorite(character.name) ? "text-warning" : ""
+                                                isFavorite(character.name) ? "text-dark" : ""
                                             }`}
                                             style={{ fontSize: "1.2rem" }}
                                         ></i>
@@ -60,9 +63,30 @@ export const CharacterList = () => {
                     </div>
                 ))}
             </div>
+
+            {/* Paginación */}
+            <div className="d-flex justify-content-between mt-4">
+                <button
+                    className="btn btn-warning"
+                    disabled={page === 1}
+                    onClick={() => setPage(page - 1)}
+                >
+                    Previous
+                </button>
+                <button
+                    className="btn btn-warning"
+                    onClick={() => setPage(page + 1)}
+                >
+                    Next
+                </button>
+            </div>
         </div>
     );
 };
+
+
+
+
 
 
 

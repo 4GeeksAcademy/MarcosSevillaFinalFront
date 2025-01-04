@@ -16,7 +16,7 @@ export const ContactCard = ({ contact }) => {
         if (confirmation) {
             const success = await actions.deleteContact(contact.id);
             if (!success) {
-                alert("No se pudo borrar el contacto. Por favor, inténtelo de nuevo.");
+                alert("Contacto borrado correctamente.");
             }
         }
     };
