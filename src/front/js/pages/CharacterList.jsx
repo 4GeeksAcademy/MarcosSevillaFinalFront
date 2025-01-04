@@ -7,7 +7,7 @@ export const CharacterList = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        actions.fetchCharacters();
+        actions.fetchCharacters(); // Obtener todos los personajes
     }, []);
 
     const isFavorite = (name) => {
@@ -16,33 +16,43 @@ export const CharacterList = () => {
 
     return (
         <div className="container mt-3">
-            <h1 className="text-light">Characters</h1>
+            <h1 className="text-light text-center mb-4">Characters</h1>
             <div className="row">
                 {store.characters.map((character, index) => (
-                    <div key={index} className="col-12 col-md-4 mb-3">
-                        <div className="card bg-dark text-light">
-                            <div className="card-body">
-                                <h5 className="card-title">{character.name}</h5>
-                                <div className="d-flex justify-content-between align-items-center">
+                    <div key={index} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                        <div className="card bg-dark text-light h-100">
+                            <img
+                                src={
+                                    character.image ||
+                                    "https://via.placeholder.com/300x200?text=Character+Image"
+                                }
+                                className="card-img-top"
+                                alt={character.name}
+                                style={{ height: "300px", objectFit: "cover" }}
+                            />
+                            <div className="card-body d-flex flex-column">
+                                <h5 className="card-title mb-3">{character.name}</h5>
+                                <div className="d-flex justify-content-between align-items-center mt-auto">
                                     <button
                                         className="btn btn-secondary rounded"
-                                        onClick={() => navigate(`/characters/${index}`)} // Puedes ajustar esta ruta
+                                        onClick={() => navigate(`/characters/${character.uid}`)}
                                     >
                                         Details
                                     </button>
                                     <button
-                                        className={`btn ${
-                                            isFavorite(character.name)
-                                                ? "btn-danger"
-                                                : "btn-outline-danger"
-                                        }`}
+                                        className="btn btn-outline-warning"
                                         onClick={() =>
                                             isFavorite(character.name)
                                                 ? actions.removeFromFavorites(character.name)
                                                 : actions.addToFavorites(character)
                                         }
                                     >
-                                        <i className="fas fa-heart"></i> {/* Ícono de corazón */}
+                                        <i
+                                            className={`fas fa-heart ${
+                                                isFavorite(character.name) ? "text-warning" : ""
+                                            }`}
+                                            style={{ fontSize: "1.2rem" }}
+                                        ></i>
                                     </button>
                                 </div>
                             </div>
@@ -53,5 +63,8 @@ export const CharacterList = () => {
         </div>
     );
 };
+
+
+
 
 
