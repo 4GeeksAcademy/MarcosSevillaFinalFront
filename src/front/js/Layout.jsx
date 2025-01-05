@@ -9,6 +9,7 @@ import { PlanetList } from "./pages/PlanetList.jsx";
 import { StarshipList } from "./pages/StarshipList.jsx";
 import { CharacterDetails } from "./pages/CharacterDetails.jsx";
 import { PlanetDetails } from "./pages/PlanetDetails.jsx";
+import { StarshipDetails } from "./pages/StarshipDetails.jsx";
 
 const Layout = () => {
     return (
@@ -23,6 +24,7 @@ const Layout = () => {
                     <Route path="/planets" element={<PlanetList />} />
                     <Route path="/planets/:uid" element={<PlanetDetails />} />
                     <Route path="/starships" element={<StarshipList />} />
+                    <Route path="/starships/:uid" element={<StarshipDetails />} />
                 </Routes>
                 <Footer />
             </BrowserRouter>
