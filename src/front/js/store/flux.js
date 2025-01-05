@@ -5,6 +5,7 @@ const getState = ({ getStore, getActions, setStore }) => {
     const contactsEndpoint = `${agendaEndpoint}/contacts`;
     const charactersEndpoint = `${swapiBaseURL}people`;
     const planetsEndpoint = `${swapiBaseURL}planets`;
+    const starshipsEndpoint = `${swapiBaseURL}starships`;
 
     return {
         store: {
@@ -14,6 +15,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             selectedCharacter: null, // Detalles del personaje seleccionado
             planets: [], // Lista de planetas
             selectedPlanet: null, // Detalles del planeta seleccionado
+            starships: [], // Lista de naves espaciales
+            selectedStarship: null, // Detalles de la nave seleccionada
         },
         actions: {
             // Obtener contactos
@@ -139,35 +142,59 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 
-            // Añadir a favoritos
-            addToFavorites: (item) => {
-                const store = getStore();
+            // Obtener todas las naves espaciales
+            fetchStarships: async (page = 1) => {
+                const endpoint = `${starshipsEndpoint}?page=${page}&limit=10`; // Paginación
+                try {
+                    const response = await fetch(endpoint);
+                    if (!response.ok) throw new Error(`Error fetching starships: ${response.statusText}`);
+                    const data = await response.json();
 
-                // Verificar si el elemento ya está en favoritos
-                const isFavorite = store.favorites.some((fav) => fav.name === item.name);
-
-                if (!isFavorite) {
                     setStore({
-                        favorites: [...store.favorites, item], // Agrega el nuevo favorito al array existente
+                        starships: data.results.map((starship) => ({
+                            ...starship,
+                            image: `https://starwars-visualguide.com/assets/img/starships/${starship.uid}.jpg`,
+                        })),
                     });
+                } catch (error) {
+                    console.error("Error fetching starships:", error);
                 }
             },
 
+            // Obtener detalles de una nave espacial
+            fetchStarshipDetails: async (uid) => {
+                try {
+                    const response = await fetch(`${starshipsEndpoint}/${uid}`);
+                    if (!response.ok) throw new Error(`Error fetching starship details: ${response.statusText}`);
+                    const data = await response.json();
+
+                    setStore({ selectedStarship: data.result.properties }); // Guardar detalles de la nave
+                } catch (error) {
+                    console.error("Error fetching starship details:", error);
+                }
+            },
+
+            // Añadir a favoritos
+            addToFavorites: (item) => {
+                const store = getStore();
+                const isFavorite = store.favorites.some((fav) => fav.name === item.name);
+                if (!isFavorite) {
+                    setStore({ favorites: [...store.favorites, item] });
+                }
+            },
+
+            // Eliminar de favoritos
             removeFromFavorites: (name) => {
                 const store = getStore();
-
-                // Filtrar favoritos para eliminar el seleccionado
                 const updatedFavorites = store.favorites.filter((fav) => fav.name !== name);
-
-                setStore({
-                    favorites: updatedFavorites, // Actualiza el array de favoritos eliminando el seleccionado
-                });
+                setStore({ favorites: updatedFavorites });
             },
         },
     };
 };
 
 export default getState;
+
 
 
 

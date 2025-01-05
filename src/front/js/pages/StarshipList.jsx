@@ -1,14 +1,15 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 
 export const StarshipList = () => {
     const { store, actions } = useContext(Context);
     const navigate = useNavigate();
+    const [page, setPage] = useState(1);
 
     useEffect(() => {
-        actions.fetchStarships();
-    }, []);
+        actions.fetchStarships(page);
+    }, [page]);
 
     const isFavorite = (name) => {
         return store.favorites.some((fav) => fav.name === name);
@@ -16,25 +17,29 @@ export const StarshipList = () => {
 
     return (
         <div className="container mt-3">
-            <h1 className="text-light">Starships</h1>
+            <h1 className="text-light text-center mb-4">Starships</h1>
             <div className="row">
                 {store.starships.map((starship, index) => (
-                    <div key={index} className="col-12 col-md-4 mb-3">
-                        <div className="card bg-dark text-light">
-                            <div className="card-body">
-                                <h5 className="card-title">{starship.name}</h5>
-                                <div className="d-flex justify-content-between align-items-center">
+                    <div key={index} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                        <div className="card bg-dark text-light h-100">
+                            <img
+                                src={starship.image || "https://via.placeholder.com/300x200?text=Starship+Image"}
+                                className="card-img-top"
+                                alt={starship.name}
+                                style={{ height: "300px", objectFit: "cover" }}
+                            />
+                            <div className="card-body d-flex flex-column">
+                                <h5 className="card-title mb-3">{starship.name}</h5>
+                                <div className="d-flex justify-content-between align-items-center mt-auto">
                                     <button
                                         className="btn btn-secondary rounded"
-                                        onClick={() => navigate(`/starships/${index}`)} // Ajusta la ruta si es necesario
+                                        onClick={() => navigate(`/starships/${starship.uid}`)}
                                     >
                                         Details
                                     </button>
                                     <button
                                         className={`btn ${
-                                            isFavorite(starship.name)
-                                                ? "btn-danger"
-                                                : "btn-outline-danger"
+                                            isFavorite(starship.name) ? "btn-warning" : "btn-outline-warning"
                                         }`}
                                         onClick={() =>
                                             isFavorite(starship.name)
@@ -42,7 +47,12 @@ export const StarshipList = () => {
                                                 : actions.addToFavorites(starship)
                                         }
                                     >
-                                        <i className="fas fa-heart"></i> {/* Ícono de corazón */}
+                                        <i
+                                            className={`fas fa-heart ${
+                                                isFavorite(starship.name) ? "text-dark" : ""
+                                            }`}
+                                            style={{ fontSize: "1.2rem" }}
+                                        ></i>
                                     </button>
                                 </div>
                             </div>
@@ -50,8 +60,26 @@ export const StarshipList = () => {
                     </div>
                 ))}
             </div>
+
+            {/* Paginación */}
+            <div className="d-flex justify-content-between mt-4">
+                <button
+                    className="btn btn-warning"
+                    disabled={page === 1}
+                    onClick={() => setPage(page - 1)}
+                >
+                    Previous
+                </button>
+                <button
+                    className="btn btn-warning"
+                    onClick={() => setPage(page + 1)}
+                >
+                    Next
+                </button>
+            </div>
         </div>
     );
 };
+
 
 
