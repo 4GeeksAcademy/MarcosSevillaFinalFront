@@ -7,7 +7,7 @@ export const StarshipDetails = () => {
     const { store, actions } = useContext(Context);
 
     useEffect(() => {
-        actions.fetchStarshipDetails(uid);
+        actions.fetchStarshipDetails(uid); // Obtener detalles de la nave espacial
     }, [uid]);
 
     const starship = store.selectedStarship;
@@ -22,12 +22,13 @@ export const StarshipDetails = () => {
                     <div
                         className="row justify-content-center align-items-start"
                         style={{
-                            backgroundColor: "#343a40",
+                            backgroundColor: "#343a40", // Fondo oscuro diferente
                             borderRadius: "10px",
                             padding: "20px",
                             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
                         }}
                     >
+                        {/* Imagen y nombre de la nave */}
                         <div className="col-12 col-md-4 text-center">
                             <h1
                                 className="text-light mb-3 text-start"
@@ -36,12 +37,12 @@ export const StarshipDetails = () => {
                                     marginLeft: "10px",
                                 }}
                             >
-                                {starship.name}
+                                {starship.model}
                             </h1>
                             <img
                                 src={`https://starwars-visualguide.com/assets/img/starships/${uid}.jpg`}
                                 className="img-fluid rounded"
-                                alt={starship.name || "Starship"}
+                                alt={starship.model || "Starship"}
                                 style={{
                                     maxHeight: "500px",
                                     objectFit: "cover",
@@ -50,28 +51,50 @@ export const StarshipDetails = () => {
                                 }}
                             />
                         </div>
+                        {/* Detalles de la nave */}
                         <div className="col-12 col-md-8 text-light">
                             <ul
                                 className="list-unstyled"
                                 style={{
-                                    marginTop: "40px",
-                                    marginLeft: "20px",
+                                    marginTop: "40px", // Añade espacio superior
+                                    marginLeft: "20px", // Separación entre imagen y detalles
                                 }}
                             >
                                 <li className="mb-3">
                                     <strong>Model:</strong> {starship.model}
                                 </li>
                                 <li className="mb-3">
+                                    <strong>Starship class:</strong> {starship.starshipClass}
+                                </li>
+                                <li className="mb-3">
                                     <strong>Manufacturer:</strong> {starship.manufacturer}
                                 </li>
                                 <li className="mb-3">
-                                    <strong>Cost:</strong> {starship.cost_in_credits} credits
+                                    <strong>Cost in credits:</strong> {starship.costInCredits}
+                                </li>
+                                <li className="mb-3">
+                                    <strong>Length:</strong> {starship.length} m
+                                </li>
+                                <li className="mb-3">
+                                    <strong>Crew:</strong> {starship.crew}
                                 </li>
                                 <li className="mb-3">
                                     <strong>Passengers:</strong> {starship.passengers}
                                 </li>
                                 <li className="mb-3">
-                                    <strong>Cargo Capacity:</strong> {starship.cargo_capacity}
+                                    <strong>Max atmosphering speed:</strong> {starship.maxAtmospheringSpeed}
+                                </li>
+                                <li className="mb-3">
+                                    <strong>Hyperdrive rating:</strong> {starship.hyperdriveRating}
+                                </li>
+                                <li className="mb-3">
+                                    <strong>MGLT:</strong> {starship.mglt}
+                                </li>
+                                <li className="mb-3">
+                                    <strong>Cargo capacity:</strong> {starship.cargoCapacity}
+                                </li>
+                                <li className="mb-3">
+                                    <strong>Consumables:</strong> {starship.consumables}
                                 </li>
                             </ul>
                         </div>
@@ -89,3 +112,4 @@ export const StarshipDetails = () => {
         </div>
     );
 };
+

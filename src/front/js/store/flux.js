@@ -7,6 +7,19 @@ const getState = ({ getStore, getActions, setStore }) => {
     const planetsEndpoint = `${swapiBaseURL}planets`;
     const starshipsEndpoint = `${swapiBaseURL}starships`;
 
+    // URL de imagen por defecto
+    const defaultImage = "https://starwars-visualguide.com/assets/img/big-placeholder.jpg";
+
+    // Función para verificar si una imagen existe
+    const getImageOrDefault = async (url) => {
+        try {
+            const response = await fetch(url, { method: "HEAD" });
+            return response.ok ? url : defaultImage;
+        } catch {
+            return defaultImage;
+        }
+    };
+
     return {
         store: {
             contacts: [],
@@ -37,47 +50,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 
-            // Crear contacto
-            createContact: async (contact) => {
-                try {
-                    const response = await fetch(contactsEndpoint, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ ...contact, agenda_slug: "AgendaMarcosSevilla" }),
-                    });
-                    if (!response.ok) throw new Error(`Error creating contact: ${response.statusText}`);
-                    await getActions().fetchContacts();
-                } catch (error) {
-                    console.error("Error creating contact:", error);
-                }
-            },
-
-            // Actualizar contacto
-            updateContact: async (id, updatedData) => {
-                try {
-                    const response = await fetch(`${contactsEndpoint}/${id}`, {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(updatedData),
-                    });
-                    if (!response.ok) throw new Error(`Error updating contact: ${response.statusText}`);
-                    await getActions().fetchContacts();
-                } catch (error) {
-                    console.error("Error updating contact:", error);
-                }
-            },
-
-            // Eliminar contacto
-            deleteContact: async (id) => {
-                try {
-                    const response = await fetch(`${contactsEndpoint}/${id}`, { method: "DELETE" });
-                    if (!response.ok) throw new Error(`Error deleting contact: ${response.statusText}`);
-                    await getActions().fetchContacts();
-                } catch (error) {
-                    console.error("Error deleting contact:", error);
-                }
-            },
-
             // Obtener todos los personajes
             fetchCharacters: async (page = 1) => {
                 const endpoint = `${charactersEndpoint}?page=${page}&limit=10`; // Paginación
@@ -86,12 +58,17 @@ const getState = ({ getStore, getActions, setStore }) => {
                     if (!response.ok) throw new Error(`Error fetching characters: ${response.statusText}`);
                     const data = await response.json();
 
-                    setStore({
-                        characters: data.results.map((character) => ({
+                    // Verificar imágenes y agregar predeterminada si es necesario
+                    const charactersWithImages = await Promise.all(
+                        data.results.map(async (character) => ({
                             ...character,
-                            image: `https://starwars-visualguide.com/assets/img/characters/${character.uid}.jpg`,
-                        })),
-                    });
+                            image: await getImageOrDefault(
+                                `https://starwars-visualguide.com/assets/img/characters/${character.uid}.jpg`
+                            ),
+                        }))
+                    );
+
+                    setStore({ characters: charactersWithImages });
                 } catch (error) {
                     console.error("Error fetching characters:", error);
                 }
@@ -104,7 +81,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                     if (!response.ok) throw new Error(`Error fetching character details: ${response.statusText}`);
                     const data = await response.json();
 
-                    setStore({ selectedCharacter: data.result.properties }); // Guardar detalles del personaje
+                    setStore({ selectedCharacter: data.result.properties });
                 } catch (error) {
                     console.error("Error fetching character details:", error);
                 }
@@ -118,12 +95,17 @@ const getState = ({ getStore, getActions, setStore }) => {
                     if (!response.ok) throw new Error(`Error fetching planets: ${response.statusText}`);
                     const data = await response.json();
 
-                    setStore({
-                        planets: data.results.map((planet) => ({
+                    // Verificar imágenes y agregar predeterminada si es necesario
+                    const planetsWithImages = await Promise.all(
+                        data.results.map(async (planet) => ({
                             ...planet,
-                            image: `https://starwars-visualguide.com/assets/img/planets/${planet.uid}.jpg`,
-                        })),
-                    });
+                            image: await getImageOrDefault(
+                                `https://starwars-visualguide.com/assets/img/planets/${planet.uid}.jpg`
+                            ),
+                        }))
+                    );
+
+                    setStore({ planets: planetsWithImages });
                 } catch (error) {
                     console.error("Error fetching planets:", error);
                 }
@@ -136,7 +118,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                     if (!response.ok) throw new Error(`Error fetching planet details: ${response.statusText}`);
                     const data = await response.json();
 
-                    setStore({ selectedPlanet: data.result.properties }); // Guardar detalles del planeta
+                    setStore({ selectedPlanet: data.result.properties });
                 } catch (error) {
                     console.error("Error fetching planet details:", error);
                 }
@@ -150,12 +132,17 @@ const getState = ({ getStore, getActions, setStore }) => {
                     if (!response.ok) throw new Error(`Error fetching starships: ${response.statusText}`);
                     const data = await response.json();
 
-                    setStore({
-                        starships: data.results.map((starship) => ({
+                    // Verificar imágenes y agregar predeterminada si es necesario
+                    const starshipsWithImages = await Promise.all(
+                        data.results.map(async (starship) => ({
                             ...starship,
-                            image: `https://starwars-visualguide.com/assets/img/starships/${starship.uid}.jpg`,
-                        })),
-                    });
+                            image: await getImageOrDefault(
+                                `https://starwars-visualguide.com/assets/img/starships/${starship.uid}.jpg`
+                            ),
+                        }))
+                    );
+
+                    setStore({ starships: starshipsWithImages });
                 } catch (error) {
                     console.error("Error fetching starships:", error);
                 }
@@ -168,7 +155,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                     if (!response.ok) throw new Error(`Error fetching starship details: ${response.statusText}`);
                     const data = await response.json();
 
-                    setStore({ selectedStarship: data.result.properties }); // Guardar detalles de la nave
+                    setStore({ selectedStarship: data.result.properties });
                 } catch (error) {
                     console.error("Error fetching starship details:", error);
                 }
@@ -177,8 +164,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             // Añadir a favoritos
             addToFavorites: (item) => {
                 const store = getStore();
-                const isFavorite = store.favorites.some((fav) => fav.name === item.name);
-                if (!isFavorite) {
+                if (!store.favorites.some((fav) => fav.name === item.name)) {
                     setStore({ favorites: [...store.favorites, item] });
                 }
             },
@@ -186,36 +172,12 @@ const getState = ({ getStore, getActions, setStore }) => {
             // Eliminar de favoritos
             removeFromFavorites: (name) => {
                 const store = getStore();
-                const updatedFavorites = store.favorites.filter((fav) => fav.name !== name);
-                setStore({ favorites: updatedFavorites });
+                setStore({ favorites: store.favorites.filter((fav) => fav.name !== name) });
             },
         },
     };
 };
 
 export default getState;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
