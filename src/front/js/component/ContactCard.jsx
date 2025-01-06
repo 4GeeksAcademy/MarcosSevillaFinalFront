@@ -23,7 +23,7 @@ export const ContactCard = ({ contact }) => {
 
     return (
         <div
-            className="d-flex justify-content-between align-items-center border-bottom"
+            className="d-flex justify-content-between align-items-center"
             style={{ padding: "15px 0" }}
         >
             <div className="d-flex align-items-center">
@@ -47,14 +47,14 @@ export const ContactCard = ({ contact }) => {
                 <button
                     className="btn btn-sm btn-warning me-2"
                     title="Edit Contact"
-                    onClick={handleEdit} // Llama a handleEdit
+                    onClick={handleEdit} // Redirige al formulario de edición
                 >
                     <i className="fas fa-pencil-alt"></i>
                 </button>
                 <button
                     className="btn btn-sm btn-danger"
                     title="Delete Contact"
-                    onClick={handleDelete} // Mantén handleDelete
+                    onClick={handleDelete}
                 >
                     <i className="fas fa-trash-alt"></i>
                 </button>
@@ -62,3 +62,4 @@ export const ContactCard = ({ contact }) => {
         </div>
     );
 };
+

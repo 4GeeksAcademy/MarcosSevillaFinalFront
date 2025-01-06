@@ -50,6 +50,61 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 
+            // Crear contacto
+            createContact: async (contact) => {
+                try {
+                    const response = await fetch(contactsEndpoint, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ ...contact, agenda_slug: "AgendaMarcosSevilla" }),
+                    });
+                    if (!response.ok) throw new Error(`Error creating contact: ${response.statusText}`);
+                    await getActions().fetchContacts();
+                } catch (error) {
+                    console.error("Error creating contact:", error);
+                }
+            },
+
+            // Actualizar contacto
+            updateContact: async (id, updatedData) => {
+                try {
+                    const response = await fetch(`${contactsEndpoint}/${id}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(updatedData),
+                    });
+
+                    if (!response.ok) {
+                        console.error(`Error updating contact: ${response.statusText}`);
+                        return false;
+                    }
+
+                    // Actualizar la lista de contactos
+                    await getActions().fetchContacts();
+                    return true;
+                } catch (error) {
+                    console.error("Error updating contact:", error);
+                    return false;
+                }
+            },
+
+            // Eliminar contacto
+            deleteContact: async (id) => {
+                try {
+                    const response = await fetch(`${contactsEndpoint}/${id}`, {
+                        method: "DELETE",
+                    });
+                    if (!response.ok) throw new Error(`Error deleting contact: ${response.statusText}`);
+                    await getActions().fetchContacts();
+                    return true;
+                } catch (error) {
+                    console.error("Error deleting contact:", error);
+                    return false;
+                }
+            },
+
             // Obtener todos los personajes
             fetchCharacters: async (page = 1) => {
                 const endpoint = `${charactersEndpoint}?page=${page}&limit=10`; // Paginación
@@ -179,5 +234,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 };
 
 export default getState;
+
 
 
