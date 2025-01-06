@@ -1,13 +1,29 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
 
 export const StarshipDetails = () => {
     const { uid } = useParams();
     const { store, actions } = useContext(Context);
+    const [imageUrl, setImageUrl] = useState(""); // Estado para manejar la URL de la imagen
+    const defaultImage = "https://starwars-visualguide.com/assets/img/big-placeholder.jpg";
 
     useEffect(() => {
         actions.fetchStarshipDetails(uid); // Obtener detalles de la nave espacial
+
+        const imageUrl = `https://starwars-visualguide.com/assets/img/starships/${uid}.jpg`;
+
+        // Verificar si la imagen existe
+        const checkImage = async () => {
+            try {
+                const response = await fetch(imageUrl, { method: "HEAD" });
+                setImageUrl(response.ok ? imageUrl : defaultImage);
+            } catch {
+                setImageUrl(defaultImage);
+            }
+        };
+
+        checkImage();
     }, [uid]);
 
     const starship = store.selectedStarship;
@@ -40,7 +56,7 @@ export const StarshipDetails = () => {
                                 {starship.model}
                             </h1>
                             <img
-                                src={`https://starwars-visualguide.com/assets/img/starships/${uid}.jpg`}
+                                src={imageUrl} // Usar la imagen del estado
                                 className="img-fluid rounded"
                                 alt={starship.model || "Starship"}
                                 style={{
@@ -112,4 +128,5 @@ export const StarshipDetails = () => {
         </div>
     );
 };
+
 
