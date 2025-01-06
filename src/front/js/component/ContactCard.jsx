@@ -1,15 +1,12 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
-
 export const ContactCard = ({ contact }) => {
     const { actions } = useContext(Context);
     const navigate = useNavigate();
-
     const handleEdit = () => {
         navigate(`/edit-contact/${contact.id}`, { state: contact });
     };
-
     const handleDelete = async () => {
         const confirmation = window.confirm("¿Está seguro que desea borrar el contacto?");
         if (confirmation) {

@@ -2,11 +2,9 @@ import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 import { ContactCard } from "../component/ContactCard.jsx";
-
 export const ContactList = () => {
     const { store } = useContext(Context);
     const navigate = useNavigate();
-
     return (
         <div className="container mt-3">
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -18,7 +16,6 @@ export const ContactList = () => {
                     Add Contact
                 </button>
             </div>
-
             {/* Lista de contactos */}
             <div>
                 {store.contacts && store.contacts.length > 0 ? (
