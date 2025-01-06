@@ -55,13 +55,23 @@ const getState = ({ getStore, getActions, setStore }) => {
                 try {
                     const response = await fetch(contactsEndpoint, {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ ...contact, agenda_slug: "AgendaMarcosSevilla" }),
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ ...contact, agenda_slug: "AgendaMarcosSevilla" }), // Incluye agenda_slug
                     });
-                    if (!response.ok) throw new Error(`Error creating contact: ${response.statusText}`);
+            
+                    if (!response.ok) {
+                        console.error(`Error creating contact: ${response.statusText}`);
+                        return false;
+                    }
+            
+                    // Actualizar la lista de contactos
                     await getActions().fetchContacts();
+                    return true;
                 } catch (error) {
                     console.error("Error creating contact:", error);
+                    return false;
                 }
             },
 

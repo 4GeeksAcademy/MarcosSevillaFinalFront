@@ -10,17 +10,21 @@ export const AddContact = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const success = await actions.createContact(contact); // Llama a createContact
+        const success = await actions.createContact(contact); // Llama a createContact en flux.js
         if (success) {
-            navigate("/"); // Redirige automáticamente a la lista de contactos
+            navigate("/contacts"); // Redirige automáticamente a la lista de contactos
         } else {
             alert("Failed to save the contact. Please try again.");
         }
     };
 
+    const handleCancel = () => {
+        navigate("/contacts"); // Redirige a la lista de contactos
+    };
+
     return (
         <div className="container mt-5">
-            <h1 className="text-center">Add a New Contact</h1>
+            <h1 className="text-start mb-4">Add Contact</h1>
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">Full Name</label>
@@ -66,19 +70,30 @@ export const AddContact = () => {
                         required
                     />
                 </div>
-                <button type="submit" className="btn btn-primary w-100">Save</button>
             </form>
-            <div className="text-start mt-3">
-                <a href="/" onClick={(e) => {
-                    e.preventDefault();
-                    navigate("/");
-                }}>
-                    or get back to Contacts
-                </a>
+            <div
+                className="d-flex justify-content-end mt-4"
+                style={{ marginBottom: "50px" }} // Espacio con el footer
+            >
+                <button
+                    type="button"
+                    className="btn btn-secondary me-2"
+                    onClick={handleCancel}
+                >
+                    Cancel
+                </button>
+                <button
+                    type="submit"
+                    className="btn btn-warning"
+                    onClick={handleSubmit}
+                >
+                    Save
+                </button>
             </div>
         </div>
     );
 };
+
 
 
 

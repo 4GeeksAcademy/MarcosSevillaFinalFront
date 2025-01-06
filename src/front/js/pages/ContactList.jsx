@@ -1,9 +1,11 @@
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 import { ContactCard } from "../component/ContactCard.jsx";
 
 export const ContactList = () => {
-    const { store, actions } = useContext(Context);
+    const { store } = useContext(Context);
+    const navigate = useNavigate();
 
     return (
         <div className="container mt-3">
@@ -11,7 +13,7 @@ export const ContactList = () => {
                 <h1 className="text-light">Contacts</h1>
                 <button 
                     className="btn btn-secondary"
-                    onClick={() => alert("Add Contact")}
+                    onClick={() => navigate("/add-contact")} // Redirige a AddContact
                 >
                     Add Contact
                 </button>
@@ -35,6 +37,8 @@ export const ContactList = () => {
         </div>
     );
 };
+
+
 
 
 
