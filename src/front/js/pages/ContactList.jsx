@@ -7,7 +7,7 @@ export const ContactList = () => {
 
     return (
         <div className="container mt-3">
-            <h1 className="text-primary">Contact List</h1>
+            <h1 className="">Contacts</h1>
             <div>
                 {store.contacts && store.contacts.length > 0 ? (
                     store.contacts.map((contact, index) => (
