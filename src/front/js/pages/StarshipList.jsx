@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 export const StarshipList = () => {
     const { store, actions } = useContext(Context);
     const navigate = useNavigate();
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(1); // Manejo de paginación
+    const limit = 10;
 
     useEffect(() => {
         actions.fetchStarships(page);
@@ -62,7 +63,7 @@ export const StarshipList = () => {
             </div>
 
             {/* Paginación */}
-            <div className="d-flex justify-content-between mt-4">
+            <div className="d-flex justify-content-between mt-4 mb-5">
                 <button
                     className="btn btn-warning"
                     disabled={page === 1}
@@ -70,6 +71,9 @@ export const StarshipList = () => {
                 >
                     Previous
                 </button>
+                <span className="text-light align-self-center">
+                    Page {page} ({(page - 1) * limit + 1} - {page * limit})
+                </span>
                 <button
                     className="btn btn-warning"
                     onClick={() => setPage(page + 1)}
@@ -80,6 +84,7 @@ export const StarshipList = () => {
         </div>
     );
 };
+
 
 
 
