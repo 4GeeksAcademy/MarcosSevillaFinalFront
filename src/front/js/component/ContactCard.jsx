@@ -7,7 +7,6 @@ export const ContactCard = ({ contact }) => {
     const navigate = useNavigate();
 
     const handleEdit = () => {
-        // Redirige al formulario de edición con los datos del contacto
         navigate(`/edit-contact/${contact.id}`, { state: contact });
     };
 
@@ -23,9 +22,14 @@ export const ContactCard = ({ contact }) => {
 
     return (
         <div
-            className="d-flex justify-content-between align-items-center border-bottom"
-            style={{ padding: "15px 0" }}
+            className="position-relative bg-white rounded p-3"
+            style={{
+                marginBottom: "20px",
+                border: "1px solid #ddd",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            }}
         >
+            {/* Información del contacto */}
             <div className="d-flex align-items-center">
                 <img
                     src={contact.image || "https://via.placeholder.com/50"}
@@ -43,18 +47,26 @@ export const ContactCard = ({ contact }) => {
                     <small>{contact.email}</small>
                 </div>
             </div>
-            <div>
+
+            {/* Botones de acciones (parte superior derecha) */}
+            <div
+                className="position-absolute"
+                style={{
+                    top: "10px",
+                    right: "10px",
+                }}
+            >
                 <button
-                    className="btn btn-sm btn-warning me-2"
+                    className="btn btn-sm btn-secondary me-4" // Aumentado el margen a 'me-3'
                     title="Edit Contact"
-                    onClick={handleEdit} // Llama a handleEdit
+                    onClick={handleEdit}
                 >
                     <i className="fas fa-pencil-alt"></i>
                 </button>
                 <button
                     className="btn btn-sm btn-danger"
                     title="Delete Contact"
-                    onClick={handleDelete} // Mantén handleDelete
+                    onClick={handleDelete}
                 >
                     <i className="fas fa-trash-alt"></i>
                 </button>
@@ -62,25 +74,6 @@ export const ContactCard = ({ contact }) => {
         </div>
     );
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

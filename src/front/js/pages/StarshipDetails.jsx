@@ -2,16 +2,16 @@ import React, { useEffect, useContext, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
 
-export const PlanetDetails = () => {
+export const StarshipDetails = () => {
     const { uid } = useParams();
     const { store, actions } = useContext(Context);
     const [imageUrl, setImageUrl] = useState(""); // Estado para manejar la URL de la imagen
     const defaultImage = "https://starwars-visualguide.com/assets/img/big-placeholder.jpg";
 
     useEffect(() => {
-        actions.fetchPlanetDetails(uid); // Obtener detalles del planeta
+        actions.fetchStarshipDetails(uid); // Obtener detalles de la nave espacial
 
-        const imageUrl = `https://starwars-visualguide.com/assets/img/planets/${uid}.jpg`;
+        const imageUrl = `https://starwars-visualguide.com/assets/img/starships/${uid}.jpg`;
 
         // Verificar si la imagen existe
         const checkImage = async () => {
@@ -26,7 +26,7 @@ export const PlanetDetails = () => {
         checkImage();
     }, [uid]);
 
-    const planet = store.selectedPlanet;
+    const starship = store.selectedStarship;
 
     return (
         <div
@@ -34,7 +34,7 @@ export const PlanetDetails = () => {
             style={{ minHeight: "100vh" }}
         >
             <div className="container mt-5 mb-5">
-                {planet ? (
+                {starship ? (
                     <div
                         className="row justify-content-center align-items-start"
                         style={{
@@ -44,7 +44,7 @@ export const PlanetDetails = () => {
                             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
                         }}
                     >
-                        {/* Imagen y nombre del planeta */}
+                        {/* Imagen y nombre de la nave */}
                         <div className="col-12 col-md-4 text-center">
                             <h1
                                 className="text-light mb-3 text-start"
@@ -53,12 +53,12 @@ export const PlanetDetails = () => {
                                     marginLeft: "10px",
                                 }}
                             >
-                                {planet.name}
+                                {starship.model}
                             </h1>
                             <img
                                 src={imageUrl} // Usar la imagen del estado
                                 className="img-fluid rounded"
-                                alt={planet.name || "Planet"}
+                                alt={starship.model || "Starship"}
                                 style={{
                                     maxHeight: "500px",
                                     objectFit: "cover",
@@ -67,26 +67,50 @@ export const PlanetDetails = () => {
                                 }}
                             />
                         </div>
-                        {/* Detalles del planeta */}
+                        {/* Detalles de la nave */}
                         <div className="col-12 col-md-8 text-light">
                             <ul
                                 className="list-unstyled"
                                 style={{
-                                    marginTop: "40px",
-                                    marginLeft: "20px",
+                                    marginTop: "40px", // Añade espacio superior
+                                    marginLeft: "20px", // Separación entre imagen y detalles
                                 }}
                             >
                                 <li className="mb-3">
-                                    <strong>Climate:</strong> {planet.climate}
+                                    <strong>Model:</strong> {starship.model}
                                 </li>
                                 <li className="mb-3">
-                                    <strong>Diameter:</strong> {planet.diameter} km
+                                    <strong>Starship class:</strong> {starship.starshipClass}
                                 </li>
                                 <li className="mb-3">
-                                    <strong>Population:</strong> {planet.population}
+                                    <strong>Manufacturer:</strong> {starship.manufacturer}
                                 </li>
                                 <li className="mb-3">
-                                    <strong>Terrain:</strong> {planet.terrain}
+                                    <strong>Cost in credits:</strong> {starship.costInCredits}
+                                </li>
+                                <li className="mb-3">
+                                    <strong>Length:</strong> {starship.length} m
+                                </li>
+                                <li className="mb-3">
+                                    <strong>Crew:</strong> {starship.crew}
+                                </li>
+                                <li className="mb-3">
+                                    <strong>Passengers:</strong> {starship.passengers}
+                                </li>
+                                <li className="mb-3">
+                                    <strong>Max atmosphering speed:</strong> {starship.maxAtmospheringSpeed}
+                                </li>
+                                <li className="mb-3">
+                                    <strong>Hyperdrive rating:</strong> {starship.hyperdriveRating}
+                                </li>
+                                <li className="mb-3">
+                                    <strong>MGLT:</strong> {starship.mglt}
+                                </li>
+                                <li className="mb-3">
+                                    <strong>Cargo capacity:</strong> {starship.cargoCapacity}
+                                </li>
+                                <li className="mb-3">
+                                    <strong>Consumables:</strong> {starship.consumables}
                                 </li>
                             </ul>
                         </div>
@@ -96,7 +120,7 @@ export const PlanetDetails = () => {
                         <div className="spinner-border text-warning" role="status">
                             <span className="visually-hidden">Loading...</span>
                         </div>
-                        <p className="text-light mt-3">Loading planet details...</p>
+                        <p className="text-light mt-3">Loading starship details...</p>
                     </div>
                 )}
             </div>
