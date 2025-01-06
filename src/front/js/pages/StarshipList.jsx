@@ -1,13 +1,11 @@
 import React, { useEffect, useContext, useState } from "react";
 import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
-
 export const StarshipList = () => {
     const { store, actions } = useContext(Context);
     const navigate = useNavigate();
     const [page, setPage] = useState(1); // Manejo de paginación
     const limit = 10;
-
     useEffect(() => {
         actions.fetchStarships(page);
     }, [page]);
@@ -15,7 +13,6 @@ export const StarshipList = () => {
     const isFavorite = (name) => {
         return store.favorites.some((fav) => fav.name === name);
     };
-
     return (
         <div className="container mt-3">
             <h1 className="text-light text-center mb-4">Starships</h1>
@@ -61,7 +58,6 @@ export const StarshipList = () => {
                     </div>
                 ))}
             </div>
-
             {/* Paginación */}
             <div className="d-flex justify-content-between mt-4 mb-5">
                 <button

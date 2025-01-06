@@ -2,22 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Context } from "../store/appContext";
 import { useContext } from "react";
-
 export const EditContact = () => {
     const { state: contact } = useLocation(); // Obtén los datos del contacto desde la navegación
     const [updatedContact, setUpdatedContact] = useState(contact);
     const { actions } = useContext(Context);
     const navigate = useNavigate();
-
     useEffect(() => {
         if (!contact) {
             navigate("/contacts"); // Si no hay datos, redirige a la lista de contactos
         }
     }, [contact, navigate]);
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         const success = await actions.updateContact(updatedContact.id, updatedContact); // Llama al método en flux.js
         if (success) {
             navigate("/contacts"); // Redirige a la lista de contactos
@@ -25,11 +21,9 @@ export const EditContact = () => {
             alert("No se pudo actualizar el contacto. Por favor, inténtelo de nuevo.");
         }
     };
-
     const handleCancel = () => {
         navigate("/contacts"); // Redirige a la lista de contactos
     };
-
     return (
         <div className="container mt-5">
             <h1 className="text-start mb-4">Edit Contact</h1>

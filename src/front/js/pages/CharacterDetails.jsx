@@ -1,7 +1,6 @@
 import React, { useEffect, useContext, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
-
 export const CharacterDetails = () => {
     const { uid } = useParams(); // Obtener el ID del personaje desde la URL
     const { store, actions } = useContext(Context);
@@ -25,9 +24,7 @@ export const CharacterDetails = () => {
 
         checkImage();
     }, [uid]);
-
     const character = store.selectedCharacter;
-
     return (
         <div
             className="container-fluid d-flex flex-column justify-content-between"
