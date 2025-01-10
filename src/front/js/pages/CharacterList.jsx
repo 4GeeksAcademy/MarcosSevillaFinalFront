@@ -54,7 +54,7 @@ export const CharacterList = () => {
                                             :
                                             <span
                                                 className='btn btn-outline-warning'
-                                                onClick={() => actions.addToFavorites(character.name)}
+                                                onClick={() => actions.addToFavorites(character)}
                                             >
                                                 <i className="fas fa-heart"></i>
                                             </span>

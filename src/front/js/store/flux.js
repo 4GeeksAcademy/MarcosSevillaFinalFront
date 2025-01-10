@@ -113,7 +113,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                     const response = await fetch(endpoint);
                     if (!response.ok) throw new Error(`Error fetching characters: ${response.statusText}`);
                     const data = await response.json();
-
+                    
                     localStorage.setItem('localCharacters', JSON.stringify(data.results));
                     // Almacenar los datos en localStorage
 
