@@ -12,13 +12,6 @@ export const CharacterList = () => {
         actions.fetchCharacters(page);
     }, [page, actions]);
 
-    //const favoriteSet = new Set(store.favorites?.map((fav) => fav.name));
-    //verificación de favoritos
-
-    //const isFavorite = (name) => {
-    //return favoriteSet.has(name);
-    //};
-
     return (
         <div className="container mt-3">
             <h1 className="text-light text-center mb-4">Characters</h1>
@@ -92,13 +85,3 @@ export const CharacterList = () => {
         </div >
     );
 };
-
-
-
-
-
-
-
-
-
-

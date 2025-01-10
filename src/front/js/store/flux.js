@@ -221,13 +221,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                 if (exist == undefined) {
                     setStore({favorites : [...getStore().favorites, item] });
                 };
-                // Añadir a favoritos
-                //const store = getStore();
-                
-                //if (!store.favorites.find((fav) => fav.name === item.name)) {
-                    // Si no existe, se agrega
-                    //setStore({ favorites: [...store.favorites, item] });
-                //}
+             
             },
             removeFromFavorites: (name) => {
                 // Eliminar de favoritos
