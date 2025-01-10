@@ -1,17 +1,30 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
-
 export const CharacterDetails = () => {
     const { uid } = useParams(); // Obtener el ID del personaje desde la URL
     const { store, actions } = useContext(Context);
+    const [imageUrl, setImageUrl] = useState(""); // Estado para manejar la URL de la imagen
+    const defaultImage = "https://starwars-visualguide.com/assets/img/big-placeholder.jpg";
 
     useEffect(() => {
         actions.fetchCharacterDetails(uid); // Obtener los detalles del personaje
+
+        const imageUrl = `https://starwars-visualguide.com/assets/img/characters/${uid}.jpg`;
+
+        // Verificar si la imagen existe
+        const checkImage = async () => {
+            try {
+                const response = await fetch(imageUrl, { method: "HEAD" });
+                setImageUrl(response.ok ? imageUrl : defaultImage);
+            } catch {
+                setImageUrl(defaultImage);
+            }
+        };
+
+        checkImage();
     }, [uid]);
-
     const character = store.selectedCharacter;
-
     return (
         <div
             className="container-fluid d-flex flex-column justify-content-between"
@@ -40,7 +53,7 @@ export const CharacterDetails = () => {
                                 {character.name}
                             </h1>
                             <img
-                                src={`https://starwars-visualguide.com/assets/img/characters/${uid}.jpg`}
+                                src={imageUrl} // Usar la imagen del estado
                                 className="img-fluid rounded"
                                 alt={character.name || "Character"}
                                 style={{
@@ -56,8 +69,8 @@ export const CharacterDetails = () => {
                             <ul
                                 className="list-unstyled"
                                 style={{
-                                    marginTop: "40px", // Añade espacio superior para que los detalles estén más abajo
-                                    marginLeft: "20px", // Más separación entre foto y detalles
+                                    marginTop: "40px",
+                                    marginLeft: "20px", 
                                 }}
                             >
                                 <li className="mb-3">
@@ -98,6 +111,7 @@ export const CharacterDetails = () => {
         </div>
     );
 };
+
 
 
 

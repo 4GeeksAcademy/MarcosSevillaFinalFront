@@ -9,21 +9,31 @@ export const AddContact = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!contact.name || !contact.email || !contact.phone || !contact.address) {
+            alert("Please complete all required fields above in order to continue.");
+            return;
+        }
 
-        const success = await actions.createContact(contact); // Llama a createContact
+        const success = await actions.createContact(contact);
         if (success) {
-            navigate("/"); // Redirige automáticamente a la lista de contactos
+            navigate("/contacts");
         } else {
             alert("Failed to save the contact. Please try again.");
         }
     };
 
+    const handleCancel = () => {
+        navigate("/contacts");
+    };
+
     return (
         <div className="container mt-5">
-            <h1 className="text-center">Add a New Contact</h1>
+            <h1 className="text-start mb-4">Add Contact</h1>
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                    <label htmlFor="name" className="form-label">Full Name</label>
+                    <label htmlFor="name" className="form-label">
+                        Full Name<span className="text-danger">*</span>
+                    </label>
                     <input
                         type="text"
                         className="form-control"
@@ -34,7 +44,9 @@ export const AddContact = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="email" className="form-label">Email</label>
+                    <label htmlFor="email" className="form-label">
+                        Email<span className="text-danger">*</span>
+                    </label>
                     <input
                         type="email"
                         className="form-control"
@@ -45,7 +57,9 @@ export const AddContact = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="phone" className="form-label">Phone</label>
+                    <label htmlFor="phone" className="form-label">
+                        Phone<span className="text-danger">*</span>
+                    </label>
                     <input
                         type="text"
                         className="form-control"
@@ -56,7 +70,9 @@ export const AddContact = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="address" className="form-label">Address</label>
+                    <label htmlFor="address" className="form-label">
+                        Address<span className="text-danger">*</span>
+                    </label>
                     <input
                         type="text"
                         className="form-control"
@@ -66,19 +82,34 @@ export const AddContact = () => {
                         required
                     />
                 </div>
-                <button type="submit" className="btn btn-primary w-100">Save</button>
             </form>
-            <div className="text-start mt-3">
-                <a href="/" onClick={(e) => {
-                    e.preventDefault();
-                    navigate("/");
-                }}>
-                    or get back to Contacts
-                </a>
+            {/* Botones debajo del formulario */}
+            <div
+                className="d-flex justify-content-end mt-4"
+                style={{ marginBottom: "50px" }} // Separación con el footer
+            >
+                <button
+                    type="button"
+                    className="btn btn-secondary me-2"
+                    onClick={handleCancel}
+                >
+                    Cancel
+                </button>
+                <button
+                    type="submit"
+                    className="btn btn-warning"
+                    onClick={handleSubmit}
+                >
+                    Save
+                </button>
             </div>
         </div>
     );
 };
+
+
+
+
 
 
 

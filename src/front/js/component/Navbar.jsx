@@ -1,10 +1,8 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
-
 export const Navbar = () => {
     const { store, actions } = useContext(Context);
-
     return (
         <nav className="navbar navbar-dark bg-dark">
             <div className="container d-flex justify-content-between align-items-center">
@@ -82,7 +80,7 @@ export const Navbar = () => {
                                         key={index}
                                         className="dropdown-item d-flex justify-content-between align-items-center"
                                     >
-                                        <span>{fav.name}</span>
+                                        <span className="text-dark">{fav.name}</span>
                                         <button
                                             className="btn btn-sm btn-danger"
                                             onClick={() => actions.removeFromFavorites(fav.name)}

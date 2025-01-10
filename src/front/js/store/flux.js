@@ -1,3 +1,5 @@
+import { element } from "prop-types";
+
 const getState = ({ getStore, getActions, setStore }) => {
     const swapiBaseURL = "https://www.swapi.tech/api/";
     const apiBaseURL = "https://playground.4geeks.com/contact";
@@ -6,12 +8,10 @@ const getState = ({ getStore, getActions, setStore }) => {
     const charactersEndpoint = `${swapiBaseURL}people`;
     const planetsEndpoint = `${swapiBaseURL}planets`;
     const starshipsEndpoint = `${swapiBaseURL}starships`;
-
-    // URL de imagen por defecto
     const defaultImage = "https://starwars-visualguide.com/assets/img/big-placeholder.jpg";
-
-    // Función para verificar si una imagen existe
+    // URL de imagen por defecto
     const getImageOrDefault = async (url) => {
+        // Función para verificar si una imagen existe
         try {
             const response = await fetch(url, { method: "HEAD" });
             return response.ok ? url : defaultImage;
@@ -38,7 +38,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                     const response = await fetch(contactsEndpoint);
                     if (!response.ok) throw new Error(`Error fetching contacts: ${response.statusText}`);
                     const data = await response.json();
-
                     setStore({
                         contacts: data.contacts.map((contact) => ({
                             ...contact,
@@ -49,17 +48,77 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error("Error fetching contacts:", error);
                 }
             },
-
-            // Obtener todos los personajes
+            createContact: async (contact) => {
+                // Crear contacto
+                try {
+                    const response = await fetch(contactsEndpoint, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ ...contact, agenda_slug: "AgendaMarcosSevilla" }), // Incluye agenda_slug
+                    });
+                    if (!response.ok) {
+                        console.error(`Error creating contact: ${response.statusText}`);
+                        return false;
+                    }
+                    await getActions().fetchContacts();
+                    // Actualizar la lista de contactos
+                    return true;
+                } catch (error) {
+                    console.error("Error creating contact:", error);
+                    return false;
+                }
+            },
+            updateContact: async (id, updatedData) => {
+                // Actualizar contacto
+                try {
+                    const response = await fetch(`${contactsEndpoint}/${id}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(updatedData),
+                    });
+                    if (!response.ok) {
+                        console.error(`Error updating contact: ${response.statusText}`);
+                        return false;
+                    }
+                    await getActions().fetchContacts();
+                    // Actualizar la lista de contactos
+                    return true;
+                } catch (error) {
+                    console.error("Error updating contact:", error);
+                    return false;
+                }
+            },
+            deleteContact: async (id) => {
+                // Eliminar contacto
+                try {
+                    const response = await fetch(`${contactsEndpoint}/${id}`, {
+                        method: "DELETE",
+                    });
+                    if (!response.ok) throw new Error(`Error deleting contact: ${response.statusText}`);
+                    await getActions().fetchContacts();
+                    return true;
+                } catch (error) {
+                    console.error("Error deleting contact:", error);
+                    return false;
+                }
+            },
             fetchCharacters: async (page = 1) => {
+                // Obtener todos los personajes
                 const endpoint = `${charactersEndpoint}?page=${page}&limit=10`; // Paginación
                 try {
                     const response = await fetch(endpoint);
                     if (!response.ok) throw new Error(`Error fetching characters: ${response.statusText}`);
                     const data = await response.json();
+                    
+                    localStorage.setItem('localCharacters', JSON.stringify(data.results));
+                    // Almacenar los datos en localStorage
 
-                    // Verificar imágenes y agregar predeterminada si es necesario
                     const charactersWithImages = await Promise.all(
+                        // Verificar imágenes y agregar predeterminada si es necesario
                         data.results.map(async (character) => ({
                             ...character,
                             image: await getImageOrDefault(
@@ -67,15 +126,13 @@ const getState = ({ getStore, getActions, setStore }) => {
                             ),
                         }))
                     );
-
                     setStore({ characters: charactersWithImages });
                 } catch (error) {
                     console.error("Error fetching characters:", error);
                 }
             },
-
-            // Obtener detalles de un personaje
             fetchCharacterDetails: async (uid) => {
+                // Obtener detalles de un personaje
                 try {
                     const response = await fetch(`${charactersEndpoint}/${uid}`);
                     if (!response.ok) throw new Error(`Error fetching character details: ${response.statusText}`);
@@ -86,17 +143,19 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error("Error fetching character details:", error);
                 }
             },
-
-            // Obtener todos los planetas
             fetchPlanets: async (page = 1) => {
+                // Obtener todos los planetas
                 const endpoint = `${planetsEndpoint}?page=${page}&limit=10`; // Paginación
                 try {
                     const response = await fetch(endpoint);
                     if (!response.ok) throw new Error(`Error fetching planets: ${response.statusText}`);
                     const data = await response.json();
+                    
+                    localStorage.setItem('localPlanets', JSON.stringify(data.results));
+                    // Almacenar los datos en localStorage
 
-                    // Verificar imágenes y agregar predeterminada si es necesario
                     const planetsWithImages = await Promise.all(
+                        // Verificar imágenes y agregar predeterminada si es necesario
                         data.results.map(async (planet) => ({
                             ...planet,
                             image: await getImageOrDefault(
@@ -104,73 +163,74 @@ const getState = ({ getStore, getActions, setStore }) => {
                             ),
                         }))
                     );
-
                     setStore({ planets: planetsWithImages });
                 } catch (error) {
                     console.error("Error fetching planets:", error);
                 }
             },
-
-            // Obtener detalles de un planeta
             fetchPlanetDetails: async (uid) => {
+                // Obtener detalles de un planeta
                 try {
                     const response = await fetch(`${planetsEndpoint}/${uid}`);
                     if (!response.ok) throw new Error(`Error fetching planet details: ${response.statusText}`);
                     const data = await response.json();
-
                     setStore({ selectedPlanet: data.result.properties });
                 } catch (error) {
                     console.error("Error fetching planet details:", error);
                 }
             },
-
-            // Obtener todas las naves espaciales
             fetchStarships: async (page = 1) => {
+                // Obtener todas las naves espaciales
                 const endpoint = `${starshipsEndpoint}?page=${page}&limit=10`; // Paginación
                 try {
                     const response = await fetch(endpoint);
                     if (!response.ok) throw new Error(`Error fetching starships: ${response.statusText}`);
                     const data = await response.json();
 
-                    // Verificar imágenes y agregar predeterminada si es necesario
+                    localStorage.setItem('localStarships', JSON.stringify(data.results));
+                    // Almacenar los datos en localStorage
+                    
                     const starshipsWithImages = await Promise.all(
+                        // Verificar imágenes y agregar predeterminada si es necesario
                         data.results.map(async (starship) => ({
                             ...starship,
                             image: await getImageOrDefault(
                                 `https://starwars-visualguide.com/assets/img/starships/${starship.uid}.jpg`
                             ),
+
                         }))
                     );
-
                     setStore({ starships: starshipsWithImages });
                 } catch (error) {
                     console.error("Error fetching starships:", error);
                 }
             },
-
-            // Obtener detalles de una nave espacial
             fetchStarshipDetails: async (uid) => {
+                // Obtener detalles de una nave espacial
                 try {
                     const response = await fetch(`${starshipsEndpoint}/${uid}`);
                     if (!response.ok) throw new Error(`Error fetching starship details: ${response.statusText}`);
                     const data = await response.json();
-
                     setStore({ selectedStarship: data.result.properties });
                 } catch (error) {
                     console.error("Error fetching starship details:", error);
                 }
             },
-
-            // Añadir a favoritos
             addToFavorites: (item) => {
-                const store = getStore();
-                if (!store.favorites.some((fav) => fav.name === item.name)) {
-                    setStore({ favorites: [...store.favorites, item] });
-                }
+                const exist = getStore().favorites.find(element => element == item);
+                if (exist == undefined) {
+                    setStore({favorites : [...getStore().favorites, item] });
+                };
+                // Añadir a favoritos
+                //const store = getStore();
+                
+                //if (!store.favorites.find((fav) => fav.name === item.name)) {
+                    // Si no existe, se agrega
+                    //setStore({ favorites: [...store.favorites, item] });
+                //}
             },
-
-            // Eliminar de favoritos
             removeFromFavorites: (name) => {
+                // Eliminar de favoritos
                 const store = getStore();
                 setStore({ favorites: store.favorites.filter((fav) => fav.name !== name) });
             },
@@ -179,5 +239,3 @@ const getState = ({ getStore, getActions, setStore }) => {
 };
 
 export default getState;
-
-

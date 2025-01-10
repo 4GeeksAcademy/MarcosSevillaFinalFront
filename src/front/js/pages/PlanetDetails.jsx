@@ -1,17 +1,27 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
-
 export const PlanetDetails = () => {
     const { uid } = useParams();
     const { store, actions } = useContext(Context);
-
+    const [imageUrl, setImageUrl] = useState(""); // Estado para manejar la URL de la imagen
+    const defaultImage = "https://starwars-visualguide.com/assets/img/big-placeholder.jpg";
     useEffect(() => {
         actions.fetchPlanetDetails(uid); // Obtener detalles del planeta
+        const imageUrl = `https://starwars-visualguide.com/assets/img/planets/${uid}.jpg`;
+        const checkImage = async () => {
+            // Verificar si la imagen existe
+            try {
+                const response = await fetch(imageUrl, { method: "HEAD" });
+                setImageUrl(response.ok ? imageUrl : defaultImage);
+            } catch {
+                setImageUrl(defaultImage);
+            }
+        };
+        checkImage();
     }, [uid]);
 
     const planet = store.selectedPlanet;
-
     return (
         <div
             className="container-fluid d-flex flex-column justify-content-between"
@@ -40,7 +50,7 @@ export const PlanetDetails = () => {
                                 {planet.name}
                             </h1>
                             <img
-                                src={`https://starwars-visualguide.com/assets/img/planets/${uid}.jpg`}
+                                src={imageUrl} // Usar la imagen del estado
                                 className="img-fluid rounded"
                                 alt={planet.name || "Planet"}
                                 style={{
@@ -72,6 +82,18 @@ export const PlanetDetails = () => {
                                 <li className="mb-3">
                                     <strong>Terrain:</strong> {planet.terrain}
                                 </li>
+                                <li className="mb-3">
+                                    <strong>Rotation Period:</strong> {planet.rotation_period} hours
+                                </li>
+                                <li className="mb-3">
+                                    <strong>Orbital Period:</strong> {planet.orbital_period} days
+                                </li>
+                                <li className="mb-3">
+                                    <strong>Gravity:</strong> {planet.gravity}
+                                </li>
+                                <li className="mb-3">
+                                    <strong>Surface Water:</strong> {planet.surface_water}%
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -88,4 +110,6 @@ export const PlanetDetails = () => {
         </div>
     );
 };
+
+
 

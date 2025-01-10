@@ -2,33 +2,31 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Context } from "../store/appContext";
 import { useContext } from "react";
-
 export const EditContact = () => {
     const { state: contact } = useLocation(); // Obtén los datos del contacto desde la navegación
     const [updatedContact, setUpdatedContact] = useState(contact);
     const { actions } = useContext(Context);
     const navigate = useNavigate();
-
     useEffect(() => {
         if (!contact) {
-            navigate("/"); // Si no hay datos, redirige a la lista de contactos
+            navigate("/contacts"); // Si no hay datos, redirige a la lista de contactos
         }
     }, [contact, navigate]);
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         const success = await actions.updateContact(updatedContact.id, updatedContact); // Llama al método en flux.js
         if (success) {
-            navigate("/"); // Redirige a la lista de contactos
+            navigate("/contacts"); // Redirige a la lista de contactos
         } else {
             alert("No se pudo actualizar el contacto. Por favor, inténtelo de nuevo.");
         }
     };
-
+    const handleCancel = () => {
+        navigate("/contacts"); // Redirige a la lista de contactos
+    };
     return (
         <div className="container mt-5">
-            <h1 className="text-center">Edit Contact</h1>
+            <h1 className="text-start mb-4">Edit Contact</h1>
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">Full Name</label>
@@ -42,7 +40,7 @@ export const EditContact = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="email" className="form-label">Email</label>
+                    <label htmlFor="email" className="form-label">Email Address</label>
                     <input
                         type="email"
                         className="form-control"
@@ -74,18 +72,32 @@ export const EditContact = () => {
                         required
                     />
                 </div>
-                <button type="submit" className="btn btn-primary w-100">Save</button>
             </form>
-            <div className="text-start mt-3">
-                <a href="/" onClick={(e) => {
-                    e.preventDefault();
-                    navigate("/");
-                }}>
-                    or get back to Contacts
-                </a>
+            {/* Botones debajo del formulario */}
+            <div
+                className="d-flex justify-content-end mt-4"
+                style={{ marginBottom: "50px" }} // Separación con el footer
+            >
+                <button
+                    type="button"
+                    className="btn btn-secondary me-2"
+                    onClick={handleCancel}
+                >
+                    Cancel
+                </button>
+                <button
+                    type="submit"
+                    className="btn btn-warning"
+                    onClick={handleSubmit}
+                >
+                    Save
+                </button>
             </div>
         </div>
     );
 };
+
+
+
 
 
