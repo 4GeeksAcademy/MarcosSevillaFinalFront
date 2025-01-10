@@ -6,23 +6,21 @@ export const Context = React.createContext(null);
 
 // Wrapper para inyectar el contexto en los componentes
 const injectContext = (PassedComponent) => {
-    const StoreWrapper = (props) => {
-        // Inicialización del estado usando `getState`
-        const [state, setState] = useState(() => {
-            const initialState = getState({
-                getStore: () => state.store,
-                getActions: () => state.actions,
-                setStore: (updatedStore) =>
-                    setState((prevState) => ({
-                        store: { ...prevState.store, ...updatedStore },
-                        actions: { ...prevState.actions },
-                    })),
-            });
-            return initialState;
-        });
+    const StoreWrapper = (props) => {        
+        const [state, setState] = useState(
+                getState({
+                  getStore: () => state.store,
+                  getActions: () => state.actions,
+                  setStore: updatedStore => setState({
+                    store: Object.assign(state.store, updatedStore),
+                    actions: { ...state.actions }
+                  })              
+                })
 
-        // Llama a `fetchContacts` al montar el componente
+        );
+
         useEffect(() => {
+            // Llama a `fetchContacts` al montar el componente
                 state.actions.fetchContacts();
         }, []);
 

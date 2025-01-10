@@ -1,3 +1,5 @@
+import { element } from "prop-types";
+
 const getState = ({ getStore, getActions, setStore }) => {
     const swapiBaseURL = "https://www.swapi.tech/api/";
     const apiBaseURL = "https://playground.4geeks.com/contact";
@@ -17,6 +19,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             return defaultImage;
         }
     };
+
     return {
         store: {
             contacts: [],
@@ -111,8 +114,11 @@ const getState = ({ getStore, getActions, setStore }) => {
                     if (!response.ok) throw new Error(`Error fetching characters: ${response.statusText}`);
                     const data = await response.json();
 
-                    // Verificar imágenes y agregar predeterminada si es necesario
+                    localStorage.setItem('localCharacters', JSON.stringify(data.results));
+                    // Almacenar los datos en localStorage
+
                     const charactersWithImages = await Promise.all(
+                        // Verificar imágenes y agregar predeterminada si es necesario
                         data.results.map(async (character) => ({
                             ...character,
                             image: await getImageOrDefault(
@@ -144,9 +150,12 @@ const getState = ({ getStore, getActions, setStore }) => {
                     const response = await fetch(endpoint);
                     if (!response.ok) throw new Error(`Error fetching planets: ${response.statusText}`);
                     const data = await response.json();
+                    
+                    localStorage.setItem('localPlanets', JSON.stringify(data.results));
+                    // Almacenar los datos en localStorage
 
-                    // Verificar imágenes y agregar predeterminada si es necesario
                     const planetsWithImages = await Promise.all(
+                        // Verificar imágenes y agregar predeterminada si es necesario
                         data.results.map(async (planet) => ({
                             ...planet,
                             image: await getImageOrDefault(
@@ -177,6 +186,10 @@ const getState = ({ getStore, getActions, setStore }) => {
                     const response = await fetch(endpoint);
                     if (!response.ok) throw new Error(`Error fetching starships: ${response.statusText}`);
                     const data = await response.json();
+
+                    localStorage.setItem('localStarships', JSON.stringify(data.results));
+                    // Almacenar los datos en localStorage
+                    
                     const starshipsWithImages = await Promise.all(
                         // Verificar imágenes y agregar predeterminada si es necesario
                         data.results.map(async (starship) => ({
@@ -184,6 +197,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                             image: await getImageOrDefault(
                                 `https://starwars-visualguide.com/assets/img/starships/${starship.uid}.jpg`
                             ),
+
                         }))
                     );
                     setStore({ starships: starshipsWithImages });
@@ -203,11 +217,17 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
             addToFavorites: (item) => {
+                const exist = getStore().favorites.find(element => element == item);
+                if (exist == undefined) {
+                    setStore({favorites : [...getStore().favorites, item] });
+                };
                 // Añadir a favoritos
-                const store = getStore();
-                if (!store.favorites.some((fav) => fav.name === item.name)) {
-                    setStore({ favorites: [...store.favorites, item] });
-                }
+                //const store = getStore();
+                
+                //if (!store.favorites.find((fav) => fav.name === item.name)) {
+                    // Si no existe, se agrega
+                    //setStore({ favorites: [...store.favorites, item] });
+                //}
             },
             removeFromFavorites: (name) => {
                 // Eliminar de favoritos
@@ -219,6 +239,3 @@ const getState = ({ getStore, getActions, setStore }) => {
 };
 
 export default getState;
-
-
-

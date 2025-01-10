@@ -80,7 +80,7 @@ export const Navbar = () => {
                                         key={index}
                                         className="dropdown-item d-flex justify-content-between align-items-center"
                                     >
-                                        <span>{fav.name}</span>
+                                        <span className="text-dark">{fav.name}</span>
                                         <button
                                             className="btn btn-sm btn-danger"
                                             onClick={() => actions.removeFromFavorites(fav.name)}
