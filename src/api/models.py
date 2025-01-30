@@ -10,6 +10,7 @@ class Users(db.Model):
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     first_name = db.Column(db.String(), unique=False, nullable=True)
+    last_name = db.Column(db.String(), unique=False, nullable=True)
     phone = db.Column(db.String(), unique=False, nullable=True)
 
     def __repr__(self):
@@ -19,5 +20,89 @@ class Users(db.Model):
         # Do not serialize the password, its a security breach
         return {"id": self.id, 
                 "email": self.email,
+                "is_active": self.is_active,
                 "first_name": self.first_name,
+                "last_name": self.last_name,
                 "phone": self.phone}
+    
+class Posts(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(), unique=False, nullable=False)
+    description = db.Column(db.String(), unique=False, nullable=False)
+    body = db.Column(db.String(), unique=False, nullable=True)
+    date = db.Column(db.DateTime, unique=False, nullable=False)  # TODO: Defalut ?
+    image_url = db.Column(db.String(), unique=False, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_to = db.relationship('Users', foreign_keys=[user_id], backref=db.backref('posts_to', lazy='select'))
+
+class Medias(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    media_type = db.Column(db.Enum('image', 'video', 'podcast',name='media_type'), unique=False, nullable=False)
+    image_url = db.Column(db.String(), unique=True, nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), unique=True)
+    post_to = db.relationship('Posts', foreign_keys=[post_id], backref=db.backref('media_to', lazy='select'))
+
+class Comments(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(), unique=False, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_to = db.relationship('Users', foreign_keys=[user_id], backref=db.backref('comments_to', lazy='select'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+    post_to = db.relationship('Posts', foreign_keys=[post_id], backref=db.backref('comments_on', lazy='select'))
+
+
+    
+class Characters(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), unique=False, nullable=False)
+    height = db.Column(db.String(), unique=False, nullable=True)
+    mass = db.Column(db.String(), unique=False, nullable=True)
+    hair_dolor = db.Column(db.String(), unique=False, nullable=True)
+    skin_color = db.Column(db.String(), unique=False, nullable=True)
+    eye_color = db.Column(db.String(), unique=False, nullable=True)
+    birth_year = db.Column(db.String(), unique=False, nullable=True)
+    gender = db.Column(db.String(), unique=False, nullable=True)
+
+class CharacterFavorites(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    character_id = db.Column(db.Integer, db.ForeignKey('characters.id'), nullable=False)
+    
+    user_to = db.relationship('Users', foreign_keys=[user_id], backref=db.backref('character_favorites', lazy='select'))
+    character_to = db.relationship('Characters', foreign_keys=[character_id], backref=db.backref('favorited_by', lazy='select'))
+
+    def __repr__(self):
+        return f'<User {self.user_id} favorited Character {self.character_id}>'
+
+class Planets(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), unique=False, nullable=False)
+    diameter = db.Column(db.String(), unique=False, nullable=True)
+    rotation_period = db.Column(db.String(), unique=False, nullable=True)
+    orbital_period = db.Column(db.String(), unique=False, nullable=True)
+    gravity = db.Column(db.String(), unique=False, nullable=True)
+    population = db.Column(db.String(), unique=False, nullable=True)
+    climate = db.Column(db.String(), unique=False, nullable=True)
+    terrain = db.Column(db.String(), unique=False, nullable=True)
+
+class PlanetFavorites (db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    planet_id = db.Column(db.Integer, db.ForeignKey('planets.id'), nullable=False)
+
+    user_to = db.relationship('Users', foreign_keys=[user_id], backref=db.backref('planet_favorites', lazy='select'))
+    planet_to = db.relationship('Planets', foreign_keys=[planet_id], backref=db.backref('favorited_by', lazy='select'))
+
+    def __repr__(self):
+        return f'<User {self.user_id} favorited Planet {self.planet_id}>'
+
+class Followers (db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    follower_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    follower_to = db.relationship('Users', foreign_keys=[follower_id], backref=db.backref('followers_to', lazy='select'))
+    following_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    following_to = db.relationship('Users', foreign_keys=[following_id], backref=db.backref('followings_to', lazy='select'))
+
+    def __repr__(self):
+        return f'<Follower: {self.follower_id} - Following {self.following_id}>'
