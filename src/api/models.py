@@ -168,7 +168,7 @@ class PlanetFavorites (db.Model):
         return {
             "id": self.id,
             "user_id": self.user_id,
-            "planet_id": self.planet_id
+            "planet_id": self.planet_to.serialize()
         }
 
 class Followers (db.Model):

@@ -103,6 +103,29 @@ def comment(id):
         return response_body, 200
 
 
+#Todos los comments de un post
+@api.route('/posts/<int:post_id>/comments', methods=['GET'])
+def post_comments(post_id):
+    response_body = {}
+    post_comments = db.session.execute(db.select(Comments).where(Comments.post_id == post_id)).scalars()
+    list_comments = [comment.serialize() for comment in post_comments]
+    response_body['message'] = f'Todos los comentarios de un post con id {post_id}'
+    response_body['results'] = list_comments
+    return response_body, 200
+
+
+# Todos los comentarios de un usuario
+@api.route('/users/<int:user_id>/comments', methods=['GET'])
+def user_comments(user_id):
+    response_body = {}
+    #logica para acceder a los datos de mi DB
+    user_comments = db.session.execute(db.select(Comments).where(Comments.user_id == user_id)).scalars()
+    list_comments = [comment.serialize() for comment in user_comments]
+    response_body['message'] = f'Todos los comentarios del usuario con id {user_id}'
+    response_body['results'] = list_comments
+    return response_body, 200
+
+
 # CRUD de los Media
 @api.route('/medias', methods=['GET', 'POST'])
 def medias():
@@ -296,13 +319,25 @@ def post(id):
         post.user_id = data.get("user_id", post.user_id)
         db.session.commit()
         response_body['message'] = f'Respuesta desde {request.method} para el id: {id}'
-        response_body['results'] = post.serialize()  # Llamada correcta a serialize()
+        response_body['results'] = post.serialize()
         return response_body, 200
     if request.method == 'DELETE':
         db.session.delete(post)
         db.session.commit()
         response_body['message'] = f'Respuesta desde {request.method} para el id: {id}'
         return response_body, 200
+
+
+# Todos los posts de un usuario
+@api.route('/users/<int:user_id>/posts', methods=['GET'])
+def users_posts(user_id):
+    response_body = {}
+    # Logica para acceder a mi DB
+    user_posts = db.session.execute(db.select(Posts).where(Posts.user_id == user_id)).scalars()
+    list_posts = [post.serialize() for post in user_posts]
+    response_body['message'] = f'Todos los posts del usuario con id {user_id}'
+    response_body['results'] = list_posts
+    return response_body, 200
 
 
 # Api externa Planets
@@ -337,14 +372,15 @@ def import_planets():
         db.session.commit()
     return jsonify({"message": "Planetas importados exitosamente", "results": planets}), 200
 
-@api.route('/api/planets', methods=['GET'])
+@api.route('/planets')
 def get_planets():
     response_body = {}
-    rows = db.session.execute(db.select(Planets)).scalars()
-    list_planets = [row.serialize() for row in rows]
-    response_body['message'] = "Lista de planetas disponibles"
-    response_body['results'] = list_planets  
-    return jsonify(response_body), 200
+    url = 'https://swapi.tech/api/planets/'
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        response_body['results'] = data
+        return response_body, 200
 
 
 # Api externa Characters
@@ -391,11 +427,12 @@ def import_characters():
     return jsonify({"message": "Personajes importados exitosamente", "results": characters}), 200
 
 
-@api.route('/api/characters', methods=['GET'])
+@api.route('/characters')
 def get_characters():
     response_body = {}
-    rows = db.session.execute(db.select(Characters)).scalars()
-    list_characters = [row.serialize() for row in rows]
-    response_body['message'] = "Lista de personajes disponibles"
-    response_body['results'] = list_characters  
-    return jsonify(response_body), 200
+    url = 'https://swapi.tech/api/people/'
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        response_body['results'] = data
+        return response_body, 200
