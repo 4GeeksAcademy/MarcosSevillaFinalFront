@@ -40,7 +40,7 @@ export const Navbar = () => {
                     </Link>
                     {/* Nuevo Link para Sign Up */}
                     <Link to="/signup" className="btn btn-outline-warning">
-                        Sign Up
+                        Login
                     </Link>
 
                     {/* Favoritos desplegable */}
