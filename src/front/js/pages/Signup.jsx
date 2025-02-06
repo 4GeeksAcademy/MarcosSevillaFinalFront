@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const AuthForm = () => {
+const Signup = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
     email: "",
     password: "",
   });
@@ -20,12 +22,36 @@ const AuthForm = () => {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+    <div className="h-100 d-flex justify-content-center align-items-center bg-light">
       <div className="card shadow p-4" style={{ width: "400px" }}>
-        <h2 className="text-center mb-3">
-          {isLogin ? "Login" : "Sign Up"}
-        </h2>
+        <h2 className="text-center mb-3">{isLogin ? "Login" : "Sign Up"}</h2>
         <form onSubmit={handleSubmit}>
+          {!isLogin && (
+            <>
+              <div className="mb-3">
+                <label className="form-label">First Name</label>
+                <input
+                  type="text"
+                  name="first_name"
+                  value={formData.first_name}
+                  onChange={handleChange}
+                  className="form-control"
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Last Name</label>
+                <input
+                  type="text"
+                  name="last_name"
+                  value={formData.last_name}
+                  onChange={handleChange}
+                  className="form-control"
+                  required
+                />
+              </div>
+            </>
+          )}
           <div className="mb-3">
             <label className="form-label">Email</label>
             <input
@@ -73,4 +99,7 @@ const AuthForm = () => {
   );
 };
 
-export default AuthForm;
+export default Signup;
+
+
+

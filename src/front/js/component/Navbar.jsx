@@ -38,6 +38,11 @@ export const Navbar = () => {
                     <Link to="/contacts" className="nav-link text-light" style={{ fontSize: "0.9rem" }}>
                         Contacts
                     </Link>
+                    {/* Nuevo Link para Sign Up */}
+                    <Link to="/signup" className="btn btn-outline-warning">
+                        Sign Up
+                    </Link>
+
                     {/* Favoritos desplegable */}
                     <div className="dropdown position-relative">
                         <button

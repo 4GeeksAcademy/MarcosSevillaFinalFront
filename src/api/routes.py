@@ -7,10 +7,49 @@ from flask_cors import CORS
 from api.models import db, Users, Posts, Comments, Medias, CharacterFavorites, PlanetFavorites, Planets, Characters
 from datetime import datetime
 import requests
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import get_jwt
 
 
 api = Blueprint('api', __name__)
 CORS(api)  # Allow CORS requests to this API
+
+# Create a route to authenticate your users and return JWTs. The
+# create_access_token() function is used to actually generate the JWT.
+@api.route("/login", methods=["POST"])
+def login():
+    response_body = {}
+    data = request.json
+    email = data.get("email", None)
+    password = request.json.get("password", None)
+    row = db.session.execute(db.select(Users).where(Users.email == email, Users.password == password, Users.is_active==True)).scalar()
+    if not row:
+        response_body['message'] = 'User not found'
+        return response_body, 404
+    user = row.serialize()
+    claims = {'use_id' : user[id]}
+    access_token = create_access_token(identity=email, additional_claims=identity)
+    response_body['access_token'] = access_token
+    response_body['message'] = 'User logged'
+    response_body['results'] = user
+    return response_body, 200 # Revisar ultima grabacion
+
+
+# Protect a route with jwt_required, which will kick out requests
+# without a valid JWT present.
+@api.route("/protected", methods=["GET"])
+@jwt_required()
+def protected():
+    response_body = {}
+    # Access the identity of the current user with get_jwt_identity
+    current_user = get_jwt_identity() # El mail
+    additional_claims = get_jwt() # Datos adicionales
+    print(current_user) 
+    print(additional_claims) 
+    #response_body['message'] = f'logged as {current_user}'
+    return response_body, 200
 
 
 # CRUD de los Users

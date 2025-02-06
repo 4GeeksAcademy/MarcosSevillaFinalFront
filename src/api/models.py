@@ -171,6 +171,7 @@ class PlanetFavorites (db.Model):
             "planet_id": self.planet_to.serialize()
         }
 
+
 class Followers (db.Model):
     id = db.Column(db.Integer, primary_key=True)
     follower_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -180,3 +181,18 @@ class Followers (db.Model):
 
     def __repr__(self):
         return f'<Follower: {self.follower_id} - Following {self.following_id}>'
+
+
+class Login (db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(80), unique=True, nullable=False)
+
+
+class Signup (db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(80), unique=False, nullable=False)
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+    first_name = db.Column(db.String(), unique=False, nullable=True)
+    last_name = db.Column(db.String(), unique=False, nullable=True)

@@ -9,6 +9,7 @@ const getState = ({ getStore, getActions, setStore }) => {
     const planetsEndpoint = `${swapiBaseURL}planets`;
     const starshipsEndpoint = `${swapiBaseURL}starships`;
     const defaultImage = "https://starwars-visualguide.com/assets/img/big-placeholder.jpg";
+
     // URL de imagen por defecto
     const getImageOrDefault = async (url) => {
         // Función para verificar si una imagen existe
