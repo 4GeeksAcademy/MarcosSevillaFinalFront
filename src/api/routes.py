@@ -18,6 +18,26 @@ CORS(api)  # Allow CORS requests to this API
 
 # Create a route to authenticate your users and return JWTs. The
 # create_access_token() function is used to actually generate the JWT.
+# ✅ REGISTRO DE USUARIO (SIGNUP)
+@api.route("/users", methods=["POST"])
+def signup():
+    data = request.json
+    email = data.get("email")
+    password = data.get("password")
+    first_name = data.get("first_name", "")
+    last_name = data.get("last_name", "")
+    if not email or not password:
+        return jsonify({"message": "Email y contraseña son obligatorios"}), 400
+    existing_user = db.session.execute(db.select(Users).where(Users.email == email)).scalar()
+    if existing_user:
+        return jsonify({"message": "El usuario ya existe"}), 409
+    new_user = Users(email=email, password=data["password"], first_name=first_name, last_name=last_name, is_active=True)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({"message": "Usuario creado exitosamente"}), 201
+
+
 @api.route("/login", methods=["POST"])
 def login():
     response_body = {}
@@ -27,14 +47,16 @@ def login():
     row = db.session.execute(db.select(Users).where(Users.email == email, Users.password == password, Users.is_active==True)).scalar()
     if not row:
         response_body['message'] = 'User not found'
-        return response_body, 404
+        return response_body, 401
     user = row.serialize()
-    claims = {'use_id' : user[id]}
-    access_token = create_access_token(identity=email, additional_claims=identity)
+    claims = {'user_id': user['id'],
+              'is_active': user['is_active']}
+    print(claims)
+    access_token = create_access_token(identity=email, additional_claims=claims)
     response_body['access_token'] = access_token
     response_body['message'] = 'User logged'
     response_body['results'] = user
-    return response_body, 200 # Revisar ultima grabacion
+    return response_body, 200
 
 
 # Protect a route with jwt_required, which will kick out requests

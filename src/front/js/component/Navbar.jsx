@@ -1,46 +1,51 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
+
 export const Navbar = () => {
     const { store, actions } = useContext(Context);
+
     return (
-        <nav className="navbar navbar-dark bg-dark">
+        <nav className="navbar navbar-dark bg-dark px-3">
             <div className="container d-flex justify-content-between align-items-center">
+                
                 {/* Logo de Star Wars */}
-                <Link
-                    to="/"
-                    className="navbar-brand d-flex align-items-center"
-                    style={{
-                        marginLeft: "-20px",
-                        padding: "5px 10px",
-                        borderRadius: "5px",
-                    }}
-                >
-                    <img
-                        src="https://starwars.chocobar.net/star-wars-logo.png"
-                        alt="Star Wars"
-                        style={{
-                            height: "60px",
-                            width: "auto",
-                        }}
-                    />
-                </Link>
-                <div className="d-flex align-items-center" style={{ gap: "15px" }}>
-                    <Link to="/characters" className="nav-link text-light" style={{ fontSize: "0.9rem" }}>
+                <div className="d-flex align-items-center">
+                    <Link to="/" className="navbar-brand">
+                        <img
+                            src="https://starwars.chocobar.net/star-wars-logo.png"
+                            alt="Star Wars"
+                            style={{ height: "50px", width: "auto" }}
+                        />
+                    </Link>
+
+                    {/* Mostrar Sign Up / Login solo si el usuario NO está autenticado */}
+                    {!store.isLogged ? (
+                        <>
+                            <Link to="/signup" className="btn btn-outline-light ms-3">Registrate</Link>
+                            <Link to="/login" className="btn btn-outline-warning ms-2">Iniciar sesión</Link>
+                        </>
+                    ) : (
+                        // Botón de Logout con ícono de apagado
+                        <button className="btn btn-danger ms-3 d-flex align-items-center" onClick={actions.logout}>
+                            <i className="fas fa-power-off me-2"></i> Cerrar sesión
+                        </button>
+                    )}
+                </div>
+
+                {/* Menú de navegación principal (alineado más a la derecha) */}
+                <div className="d-flex ms-auto align-items-center">
+                    <Link to="/characters" className="nav-link text-light me-3" style={{ fontSize: "0.9rem" }}>
                         Characters
                     </Link>
-                    <Link to="/planets" className="nav-link text-light" style={{ fontSize: "0.9rem" }}>
+                    <Link to="/planets" className="nav-link text-light me-3" style={{ fontSize: "0.9rem" }}>
                         Planets
                     </Link>
-                    <Link to="/starships" className="nav-link text-light" style={{ fontSize: "0.9rem" }}>
+                    <Link to="/starships" className="nav-link text-light me-3" style={{ fontSize: "0.9rem" }}>
                         Starships
                     </Link>
-                    <Link to="/contacts" className="nav-link text-light" style={{ fontSize: "0.9rem" }}>
+                    <Link to="/contacts" className="nav-link text-light me-3" style={{ fontSize: "0.9rem" }}>
                         Contacts
-                    </Link>
-                    {/* Nuevo Link para Sign Up */}
-                    <Link to="/signup" className="btn btn-outline-warning">
-                        Login
                     </Link>
 
                     {/* Favoritos desplegable */}
@@ -104,22 +109,6 @@ export const Navbar = () => {
         </nav>
     );
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

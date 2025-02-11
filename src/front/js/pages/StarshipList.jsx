@@ -1,18 +1,27 @@
 import React, { useEffect, useContext, useState } from "react";
 import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
+
 export const StarshipList = () => {
     const { store, actions } = useContext(Context);
     const navigate = useNavigate();
     const [page, setPage] = useState(1); // Manejo de paginación
     const limit = 10;
+
     useEffect(() => {
-        actions.fetchStarships(page);
+        if (!store.isLogged) {
+            actions.setAlert({
+                text: "Debes iniciar sesión para acceder al contenido.",
+                background: "danger",
+                visible: true
+            });
+            navigate("/login"); // ❌ Evita que acceda a la página
+        } else {
+            actions.setAlert({ text: "", background: "primary", visible: false }); // ✅ Limpia alertas al entrar
+            actions.fetchStarships(page);
+        }
     }, [page]);
 
-    const isFavorite = (name) => {
-        return store.favorites.some((fav) => fav.name === name);
-    };
     return (
         <div className="container mt-3">
             <h1 className="text-light text-center mb-4">Starships</h1>
@@ -21,7 +30,7 @@ export const StarshipList = () => {
                     <div key={index} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
                         <div className="card bg-dark text-light h-100">
                             <img
-                                src={starship.image || "https://via.placeholder.com/300x200?text=Starship+Image"}
+                                src={starship.image || "https://th.bing.com/th?id=OIP.OSH1MmFY_yI9RZ0lVG_lfgHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2"}
                                 className="card-img-top"
                                 alt={starship.name}
                                 style={{ height: "300px", objectFit: "cover" }}
@@ -35,23 +44,21 @@ export const StarshipList = () => {
                                     >
                                         Details
                                     </button>
-                                    <button
-                                        className={`btn ${
-                                            isFavorite(starship.name) ? "btn-warning" : "btn-outline-warning"
-                                        }`}
-                                        onClick={() =>
-                                            isFavorite(starship.name)
-                                                ? actions.removeFromFavorites(starship.name)
-                                                : actions.addToFavorites(starship)
-                                        }
-                                    >
-                                        <i
-                                            className={`fas fa-heart ${
-                                                isFavorite(starship.name) ? "text-dark" : ""
-                                            }`}
-                                            style={{ fontSize: "1.2rem" }}
-                                        ></i>
-                                    </button>
+                                    { store.favorites.find((element) => starship.name === element.name ) ?
+                                            <span
+                                                className='btn btn-warning'
+                                                onClick={() => actions.removeFromFavorites(starship.name)}
+                                            >
+                                                <i className="fas fa-heart text-dark"></i>
+                                            </span>
+                                            :
+                                            <span
+                                                className='btn btn-outline-warning'
+                                                onClick={() => actions.addToFavorites(starship)}
+                                            >
+                                                <i className="fas fa-heart"></i>
+                                            </span>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -80,6 +87,7 @@ export const StarshipList = () => {
         </div>
     );
 };
+
 
 
 

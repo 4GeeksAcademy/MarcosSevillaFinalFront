@@ -31,10 +31,105 @@ const getState = ({ getStore, getActions, setStore }) => {
             selectedPlanet: null, // Detalles del planeta seleccionado
             starships: [], // Lista de naves espaciales
             selectedStarship: null, // Detalles de la nave seleccionada
-        },
+            alert: {text: '', background: 'primary', visible: false},
+            isLogged: false,
+            users: [],
+			user: {},
+            currentUser: {},
+		},
         actions: {
-            // Obtener contactos
+			setIsLogged: (value) => { setStore({ isLogged: value }) },
+			setUser: (currentUser) => { setStore({ user: currentUser }) },
+			setAlert: (newAlert) => setStore({alert: newAlert}),
+			clearTodos: () => { setStore ({ todos: [] })},
+			setCurrentUser: (item) => { setStore({ currentUser: item })},
+            signup: async (dataToSend) => {
+                const uri =`${process.env.BACKEND_URL}/api/users`
+                const options = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(dataToSend)
+                }
+                const response = await fetch(uri, options);
+                if (!response.ok) {
+                    console.log('error:', response.status, response.statusText)
+                    return
+                }
+            },
+            updateUser: async (updatedData) => {
+                const store = getStore();
+                const userId = store.user.id; // Obtiene el ID del usuario logueado
+            
+                if (!userId) {
+                    console.error("No hay usuario autenticado.");
+                    return false;
+                }
+            
+                const uri = `${process.env.BACKEND_URL}/api/user/${userId}`;
+                const options = {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(updatedData),
+                };
+            
+                try {
+                    const response = await fetch(uri, options);
+                    if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+            
+                    const data = await response.json();
+                    setStore({ user: data.results });
+            
+                    return true;
+                } catch (error) {
+                    console.error("Error actualizando usuario:", error);
+                    return false;
+                }
+            },
+            
+			login: async (dataToSend) => {
+				const uri = `${process.env.BACKEND_URL}/api/login`;
+				const options = {
+					method: 'POST',
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(dataToSend)
+				};
+				const response = await fetch(uri, options);
+				if (!response.ok) {
+					// tratar el error
+					console.log('Error:', response.status, response.statusText);
+					if (response.status == 401) {
+						console.log('en el error 401');
+						setStore({alert: {text: 'Email o contraseña no válido', background: 'danger', visible: true}})
+					}
+					return {success: false}   // IMPORTANTE
+				}
+				const data = await response.json()
+                getActions().setAlert({ text: "Inicio de sesión exitoso.", background: "success", visible: true });
+				localStorage.setItem('token', data.access_token)
+				setStore({
+					isLogged: true,
+					user: data.results
+				})
+                return {success:true}
+			},  
+            logout: () => {
+                setStore({
+                    isLogged: false,
+                    user: {},
+                    currentUser: {},
+                    alert: { text: "Has cerrado sesión.", background: "primary", visible: true }
+                });              
+                localStorage.clear();
+                setTimeout(() => {
+                    window.location.href = "/login";
+                }, 500);
+            },
             fetchContacts: async () => {
+            // Obtener contactos
                 try {
                     const response = await fetch(contactsEndpoint);
                     if (!response.ok) throw new Error(`Error fetching contacts: ${response.statusText}`);
@@ -118,7 +213,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                     localStorage.setItem('localCharacters', JSON.stringify(data.results));
                     // Almacenar los datos en localStorage
 
-                    const charactersWithImages = await Promise.all(
+                    /* const charactersWithImages = await Promise.all(
                         // Verificar imágenes y agregar predeterminada si es necesario
                         data.results.map(async (character) => ({
                             ...character,
@@ -127,7 +222,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                             ),
                         }))
                     );
-                    setStore({ characters: charactersWithImages });
+                    setStore({ characters: charactersWithImages }); */
+                    setStore({characters: data.results})
                 } catch (error) {
                     console.error("Error fetching characters:", error);
                 }
@@ -155,7 +251,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                     localStorage.setItem('localPlanets', JSON.stringify(data.results));
                     // Almacenar los datos en localStorage
 
-                    const planetsWithImages = await Promise.all(
+                    /* const planetsWithImages = await Promise.all(
                         // Verificar imágenes y agregar predeterminada si es necesario
                         data.results.map(async (planet) => ({
                             ...planet,
@@ -164,7 +260,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                             ),
                         }))
                     );
-                    setStore({ planets: planetsWithImages });
+                    setStore({ planets: planetsWithImages }); */
+                    setStore({planets: data.results})
                 } catch (error) {
                     console.error("Error fetching planets:", error);
                 }
@@ -191,7 +288,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                     localStorage.setItem('localStarships', JSON.stringify(data.results));
                     // Almacenar los datos en localStorage
                     
-                    const starshipsWithImages = await Promise.all(
+                    /* const starshipsWithImages = await Promise.all(
                         // Verificar imágenes y agregar predeterminada si es necesario
                         data.results.map(async (starship) => ({
                             ...starship,
@@ -201,7 +298,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 
                         }))
                     );
-                    setStore({ starships: starshipsWithImages });
+                    setStore({ starships: starshipsWithImages }); */
+                    setStore({starships: data.results})
                 } catch (error) {
                     console.error("Error fetching starships:", error);
                 }

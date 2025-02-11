@@ -16,7 +16,7 @@ export const ContactCard = ({ contact }) => {
             }
         }
     };
-
+    
     return (
         <div
             className="position-relative bg-white rounded p-3"
